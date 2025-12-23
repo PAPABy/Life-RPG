@@ -1,172 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Life RPG</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<title>Life RPG</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      background: #0b0f1a;
-      color: white;
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 20px;
-    }
+<style>
+body {
+  background:#0b0f1a;
+  color:white;
+  font-family:Arial, sans-serif;
+  margin:0;
+  padding:20px;
+}
 
-    .card {
-      background: #11162a;
-      border-radius: 20px;
-      padding: 20px;
-      max-width: 450px;
-      margin: auto;
-    }
+.card {
+  background:#11162a;
+  border-radius:24px;
+  padding:20px;
+  max-width:480px;
+  margin:auto;
+}
 
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
+h1 {
+  text-align:center;
+  margin:10px 0;
+}
 
-    .stat {
-      margin-bottom: 18px;
-    }
+.avatar {
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  margin:10px auto;
+  background:linear-gradient(135deg,#00ffcc,#0066ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+}
 
-    .label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 5px;
-      font-size: 14px;
-    }
+.rank {
+  text-align:center;
+  margin-bottom:20px;
+  font-size:18px;
+  color:#00ffcc;
+}
 
-    .bar {
-      height: 12px;
-      background: #1f2440;
-      border-radius: 10px;
-      overflow: hidden;
-    }
+.stat {
+  margin-bottom:18px;
+}
 
-    .fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, #00ffcc, #00ccff);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-    }
+.label {
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:6px;
+}
 
-    input[type=range] {
-      width: 100%;
-      margin-top: 8px;
-    }
+.bar {
+  height:12px;
+  background:#1f2440;
+  border-radius:10px;
+  overflow:hidden;
+}
 
-    .rank {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 18px;
-      color: #00ffcc;
-    }
-  </style>
+.fill {
+  height:100%;
+  width:0%;
+  border-radius:10px;
+  transition:0.3s;
+}
+
+input[type=range] {
+  width:100%;
+  margin-top:8px;
+}
+</style>
 </head>
+
 <body>
 
 <div class="card">
+  <div class="avatar">🧙</div>
   <h1>Life RPG</h1>
-
-  <!-- STATS -->
-  <div id="stats"></div>
-
   <div class="rank" id="rankText">RANK: NOVICE</div>
+
+  <div id="stats"></div>
 </div>
 
 <script>
-  const STORAGE_KEY = 'life_rpg_stats_v2';
+const STORAGE_KEY = "life_rpg_visual";
 
-  const statList = [
-    'discipline',
-    'physical',
-    'financial',
-    'mental',
-    'social',
-    'relationship'
-  ];
+const statConfig = {
+  discipline: { label:"Discipline", color:"#4facfe" },
+  physical: { label:"Physical", color:"#ff4d4d" },
+  financial: { label:"Financial", color:"#ffd700" },
+  mental: { label:"Mental", color:"#b983ff" },
+  social: { label:"Social", color:"#2ecc71" },
+  relationship: { label:"Relationship", color:"#ff6fae" }
+};
 
-  let stats = {
-    discipline: 5,
-    physical: 5,
-    financial: 5,
-    mental: 5,
-    social: 5,
-    relationship: 5
-  };
+let stats = {};
+Object.keys(statConfig).forEach(k => stats[k] = 5);
 
-  // Load saved data
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) stats = JSON.parse(saved);
+// Load
+const saved = localStorage.getItem(STORAGE_KEY);
+if(saved) stats = JSON.parse(saved);
 
-  const container = document.getElementById('stats');
+const container = document.getElementById("stats");
 
-  function createStat(name) {
-    const label = name.charAt(0).toUpperCase() + name.slice(1);
+function createStat(key) {
+  const s = statConfig[key];
+  const div = document.createElement("div");
+  div.className = "stat";
+  div.innerHTML = `
+    <div class="label">
+      <span>${s.label}</span>
+      <span id="${key}Value">0.0</span>
+    </div>
+    <div class="bar">
+      <div class="fill" id="${key}Bar" style="background:${s.color}"></div>
+    </div>
+    <input id="${key}Input" type="range" min="0" max="10" step="0.1">
+  `;
+  container.appendChild(div);
 
-    const div = document.createElement('div');
-    div.className = 'stat';
-    div.innerHTML = `
-      <div class="label">
-        <span>${label}</span>
-        <span id="${name}Value">0.0</span>
-      </div>
-      <div class="bar">
-        <div class="fill" id="${name}Bar"></div>
-      </div>
-      <input id="${name}Input" type="range" min="0" max="10" step="0.1">
-    `;
-    container.appendChild(div);
-  }
-
-  function saveStats() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
-  }
-
-  function updateUI(name) {
-    document.getElementById(name + 'Value').innerText =
-      stats[name].toFixed(1);
-    document.getElementById(name + 'Bar').style.width =
-      (stats[name] * 10) + '%';
-    document.getElementById(name + 'Input').value =
-      stats[name];
-  }
-
-  function updateRank() {
-    const total = statList.reduce((sum, s) => sum + stats[s], 0);
-    const avg = total / statList.length;
-
-    let rank = 'NOVICE';
-    if (avg >= 3) rank = 'APPRENTICE';
-    if (avg >= 6) rank = 'WARRIOR';
-    if (avg >= 9) rank = 'MASTER';
-
-    document.getElementById('rankText').innerText =
-      'RANK: ' + rank;
-  }
-
-  function bindInput(name) {
-    document
-      .getElementById(name + 'Input')
-      .addEventListener('input', (e) => {
-        stats[name] = parseFloat(e.target.value);
-        updateUI(name);
-        updateRank();
-        saveStats();
-      });
-  }
-
-  // INIT
-  statList.forEach(stat => {
-    createStat(stat);
-    bindInput(stat);
-    updateUI(stat);
+  document.getElementById(key+"Input").addEventListener("input", e => {
+    stats[key] = parseFloat(e.target.value);
+    updateUI(key);
+    updateRank();
+    save();
   });
 
-  updateRank();
+  updateUI(key);
+}
+
+function updateUI(key) {
+  document.getElementById(key+"Value").innerText = stats[key].toFixed(1);
+  document.getElementById(key+"Bar").style.width = (stats[key]*10)+"%";
+  document.getElementById(key+"Input").value = stats[key];
+}
+
+function updateRank() {
+  const avg = Object.values(stats).reduce((a,b)=>a+b,0) / Object.keys(stats).length;
+  let rank = "NOVICE";
+  if(avg>=3) rank="APPRENTICE";
+  if(avg>=6) rank="WARRIOR";
+  if(avg>=9) rank="MASTER";
+  document.getElementById("rankText").innerText = "RANK: "+rank;
+}
+
+function save() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+}
+
+Object.keys(statConfig).forEach(createStat);
+updateRank();
 </script>
 
 </body>
