@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8">
 <title>Life RPG</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -10,7 +10,6 @@ body {
   background:#0b0f1a;
   color:white;
   font-family:Arial, sans-serif;
-  margin:0;
   padding:20px;
 }
 
@@ -20,11 +19,6 @@ body {
   padding:20px;
   max-width:480px;
   margin:auto;
-}
-
-h1 {
-  text-align:center;
-  margin:10px 0;
 }
 
 .avatar {
@@ -39,41 +33,51 @@ h1 {
   font-size:40px;
 }
 
+h1 { text-align:center; }
+
 .rank {
   text-align:center;
-  margin-bottom:20px;
-  font-size:18px;
+  margin-bottom:10px;
   color:#00ffcc;
 }
 
-.stat {
-  margin-bottom:18px;
-}
-
-.label {
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:6px;
-}
-
-.bar {
-  height:12px;
+.exp-bar {
+  height:14px;
   background:#1f2440;
   border-radius:10px;
   overflow:hidden;
+  margin-bottom:6px;
 }
 
-.fill {
+.exp-fill {
   height:100%;
+  background:linear-gradient(90deg,#ffd700,#ff9f00);
   width:0%;
-  border-radius:10px;
-  transition:0.3s;
+  transition:.3s;
 }
 
-input[type=range] {
-  width:100%;
-  margin-top:8px;
+.level {
+  text-align:center;
+  font-size:14px;
+  margin-bottom:20px;
+}
+
+.quest {
+  background:#1a1f3c;
+  padding:12px;
+  border-radius:14px;
+  margin-bottom:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.quest button {
+  background:#00ffcc;
+  border:none;
+  border-radius:8px;
+  padding:6px 10px;
+  cursor:pointer;
 }
 </style>
 </head>
@@ -85,77 +89,104 @@ input[type=range] {
   <h1>Life RPG</h1>
   <div class="rank" id="rankText">RANK: NOVICE</div>
 
-  <div id="stats"></div>
+  <div class="exp-bar">
+    <div class="exp-fill" id="expFill"></div>
+  </div>
+  <div class="level" id="levelText">Level 1 • EXP 0 / 100</div>
+
+  <h3>Daily Quests</h3>
+  <div id="quests"></div>
 </div>
 
 <script>
-const STORAGE_KEY = "life_rpg_visual";
+const STORAGE_KEY = "life_rpg_game";
 
-const statConfig = {
-  discipline: { label:"Discipline", color:"#4facfe" },
-  physical: { label:"Physical", color:"#ff4d4d" },
-  financial: { label:"Financial", color:"#ffd700" },
-  mental: { label:"Mental", color:"#b983ff" },
-  social: { label:"Social", color:"#2ecc71" },
-  relationship: { label:"Relationship", color:"#ff6fae" }
+const quests = [
+  { id:"discipline", text:"Discipline Task (+10 EXP)" },
+  { id:"physical", text:"Physical Activity (+10 EXP)" },
+  { id:"mental", text:"Mental Care (+10 EXP)" },
+  { id:"social", text:"Social Interaction (+10 EXP)" }
+];
+
+let game = {
+  level: 1,
+  exp: 0,
+  expMax: 100,
+  completed: {},
+  lastDay: new Date().toDateString()
 };
 
-let stats = {};
-Object.keys(statConfig).forEach(k => stats[k] = 5);
-
-// Load
 const saved = localStorage.getItem(STORAGE_KEY);
-if(saved) stats = JSON.parse(saved);
-
-const container = document.getElementById("stats");
-
-function createStat(key) {
-  const s = statConfig[key];
-  const div = document.createElement("div");
-  div.className = "stat";
-  div.innerHTML = `
-    <div class="label">
-      <span>${s.label}</span>
-      <span id="${key}Value">0.0</span>
-    </div>
-    <div class="bar">
-      <div class="fill" id="${key}Bar" style="background:${s.color}"></div>
-    </div>
-    <input id="${key}Input" type="range" min="0" max="10" step="0.1">
-  `;
-  container.appendChild(div);
-
-  document.getElementById(key+"Input").addEventListener("input", e => {
-    stats[key] = parseFloat(e.target.value);
-    updateUI(key);
-    updateRank();
-    save();
-  });
-
-  updateUI(key);
-}
-
-function updateUI(key) {
-  document.getElementById(key+"Value").innerText = stats[key].toFixed(1);
-  document.getElementById(key+"Bar").style.width = (stats[key]*10)+"%";
-  document.getElementById(key+"Input").value = stats[key];
-}
-
-function updateRank() {
-  const avg = Object.values(stats).reduce((a,b)=>a+b,0) / Object.keys(stats).length;
-  let rank = "NOVICE";
-  if(avg>=3) rank="APPRENTICE";
-  if(avg>=6) rank="WARRIOR";
-  if(avg>=9) rank="MASTER";
-  document.getElementById("rankText").innerText = "RANK: "+rank;
-}
+if(saved) game = JSON.parse(saved);
 
 function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(game));
 }
 
-Object.keys(statConfig).forEach(createStat);
-updateRank();
+function levelUp() {
+  game.level++;
+  game.exp = 0;
+  game.expMax = Math.floor(game.expMax * 1.2);
+}
+
+function updateUI() {
+  document.getElementById("rankText").innerText =
+    game.level >= 10 ? "RANK: MASTER" :
+    game.level >= 6 ? "RANK: WARRIOR" :
+    game.level >= 3 ? "RANK: APPRENTICE" : "RANK: NOVICE";
+
+  document.getElementById("levelText").innerText =
+    `Level ${game.level} • EXP ${game.exp} / ${game.expMax}`;
+
+  document.getElementById("expFill").style.width =
+    (game.exp / game.expMax * 100) + "%";
+}
+
+function checkDayReset() {
+  const today = new Date().toDateString();
+  if(game.lastDay !== today) {
+    game.completed = {};
+    game.lastDay = today;
+    save();
+  }
+}
+
+function completeQuest(id) {
+  if(game.completed[id]) return;
+  game.completed[id] = true;
+  game.exp += 10;
+
+  if(game.exp >= game.expMax) levelUp();
+
+  save();
+  renderQuests();
+  updateUI();
+}
+
+function renderQuests() {
+  const box = document.getElementById("quests");
+  box.innerHTML = "";
+
+  quests.forEach(q => {
+    const done = game.completed[q.id];
+    const div = document.createElement("div");
+    div.className = "quest";
+    div.innerHTML = `
+      <span>${q.text}</span>
+      <button ${done ? "disabled" : ""}>
+        ${done ? "✓" : "Done"}
+      </button>
+    `;
+    div.querySelector("button").onclick = () => completeQuest(q.id);
+    box.appendChild(div);
+  });
+}
+
+// INIT
+checkDayReset();
+renderQuests();
+updateUI();
+save();
 </script>
 
 </body>
