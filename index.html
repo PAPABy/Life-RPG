@@ -17,7 +17,7 @@ body {
   background:#11162a;
   border-radius:24px;
   padding:20px;
-  max-width:480px;
+  max-width:500px;
   margin:auto;
 }
 
@@ -35,18 +35,38 @@ body {
 
 h1 { text-align:center; }
 
+.tabs {
+  display:flex;
+  gap:10px;
+  margin:10px 0 20px;
+}
+
+.tabs button {
+  flex:1;
+  background:#1f2440;
+  border:none;
+  color:white;
+  padding:8px;
+  border-radius:10px;
+}
+
+.tabs button.active {
+  background:#00ffcc;
+  color:black;
+}
+
 .rank {
   text-align:center;
   margin-bottom:10px;
   color:#00ffcc;
 }
 
+/* EXP */
 .exp-bar {
   height:14px;
   background:#1f2440;
   border-radius:10px;
   overflow:hidden;
-  margin-bottom:6px;
 }
 
 .exp-fill {
@@ -59,7 +79,7 @@ h1 { text-align:center; }
 .level {
   text-align:center;
   font-size:14px;
-  margin-bottom:20px;
+  margin:6px 0 20px;
 }
 
 .quest {
@@ -77,7 +97,36 @@ h1 { text-align:center; }
   border:none;
   border-radius:8px;
   padding:6px 10px;
-  cursor:pointer;
+}
+
+/* STATS */
+.stat {
+  margin-bottom:18px;
+}
+
+.label {
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+.bar {
+  height:12px;
+  background:#1f2440;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.fill {
+  height:100%;
+  border-radius:10px;
+  transition:.3s;
+}
+
+input[type=range] {
+  width:100%;
+  margin-top:8px;
 }
 </style>
 </head>
@@ -89,103 +138,191 @@ h1 { text-align:center; }
   <h1>Life RPG</h1>
   <div class="rank" id="rankText">RANK: NOVICE</div>
 
-  <div class="exp-bar">
-    <div class="exp-fill" id="expFill"></div>
+  <div class="tabs">
+    <button id="tabStats" class="active">Stats</button>
+    <button id="tabGame">Game</button>
   </div>
-  <div class="level" id="levelText">Level 1 • EXP 0 / 100</div>
 
-  <h3>Daily Quests</h3>
-  <div id="quests"></div>
+  <!-- STATS MODE -->
+  <div id="statsMode"></div>
+
+  <!-- GAME MODE -->
+  <div id="gameMode" style="display:none">
+    <div class="exp-bar"><div class="exp-fill" id="expFill"></div></div>
+    <div class="level" id="levelText"></div>
+
+    <h3>Daily Quests</h3>
+    <div id="quests"></div>
+
+    <button onclick="devResetDay()" style="margin-top:10px;width:100%">
+      🔄 Dev: Reset Day
+    </button>
+  </div>
 </div>
 
 <script>
-const STORAGE_KEY = "life_rpg_game";
+const STORAGE = "life_rpg_full";
 
-const quests = [
-  { id:"discipline", text:"Discipline Task (+10 EXP)" },
-  { id:"physical", text:"Physical Activity (+10 EXP)" },
-  { id:"mental", text:"Mental Care (+10 EXP)" },
-  { id:"social", text:"Social Interaction (+10 EXP)" }
-];
-
-let game = {
-  level: 1,
-  exp: 0,
-  expMax: 100,
-  completed: {},
-  lastDay: new Date().toDateString()
+const statConfig = {
+  discipline:{label:"Discipline",color:"#4facfe"},
+  physical:{label:"Physical",color:"#ff4d4d"},
+  financial:{label:"Financial",color:"#ffd700"},
+  mental:{label:"Mental",color:"#b983ff"},
+  social:{label:"Social",color:"#2ecc71"},
+  relationship:{label:"Relationship",color:"#ff6fae"}
 };
 
-const saved = localStorage.getItem(STORAGE_KEY);
-if(saved) game = JSON.parse(saved);
+let stats = {};
+Object.keys(statConfig).forEach(k=>stats[k]=5);
 
-function save() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(game));
+let game = {
+  level:1,
+  exp:0,
+  expMax:100,
+  completed:{},
+  lastDay:new Date().toDateString()
+};
+
+// LOAD
+const saved = localStorage.getItem(STORAGE);
+if(saved){
+  const data = JSON.parse(saved);
+  stats = data.stats;
+  game = data.game;
 }
 
-function levelUp() {
-  game.level++;
-  game.exp = 0;
-  game.expMax = Math.floor(game.expMax * 1.2);
+// SAVE
+function save(){
+  localStorage.setItem(STORAGE,JSON.stringify({stats,game}));
 }
 
-function updateUI() {
-  document.getElementById("rankText").innerText =
-    game.level >= 10 ? "RANK: MASTER" :
-    game.level >= 6 ? "RANK: WARRIOR" :
-    game.level >= 3 ? "RANK: APPRENTICE" : "RANK: NOVICE";
+/* ---------- STATS ---------- */
+const statsBox = document.getElementById("statsMode");
 
-  document.getElementById("levelText").innerText =
-    `Level ${game.level} • EXP ${game.exp} / ${game.expMax}`;
+function createStat(k){
+  const s = statConfig[k];
+  const div = document.createElement("div");
+  div.className="stat";
+  div.innerHTML=`
+    <div class="label">
+      <span>${s.label}</span>
+      <span id="${k}Value"></span>
+    </div>
+    <div class="bar">
+      <div class="fill" id="${k}Bar" style="background:${s.color}"></div>
+    </div>
+    <input id="${k}Input" type="range" min="0" max="10" step="0.1">
+  `;
+  statsBox.appendChild(div);
 
-  document.getElementById("expFill").style.width =
-    (game.exp / game.expMax * 100) + "%";
-}
-
-function checkDayReset() {
-  const today = new Date().toDateString();
-  if(game.lastDay !== today) {
-    game.completed = {};
-    game.lastDay = today;
+  document.getElementById(k+"Input").oninput=e=>{
+    stats[k]=parseFloat(e.target.value);
+    updateStatUI(k);
+    updateRank();
     save();
-  }
+  };
+
+  updateStatUI(k);
 }
 
-function completeQuest(id) {
+function updateStatUI(k){
+  document.getElementById(k+"Value").innerText=stats[k].toFixed(1);
+  document.getElementById(k+"Bar").style.width=(stats[k]*10)+"%";
+  document.getElementById(k+"Input").value=stats[k];
+}
+
+/* ---------- GAME ---------- */
+const quests = [
+  {id:"discipline",text:"Discipline Task (+25 EXP)"},
+  {id:"physical",text:"Physical Activity (+25 EXP)"},
+  {id:"mental",text:"Mental Care (+25 EXP)"},
+  {id:"social",text:"Social Interaction (+25 EXP)"}
+];
+
+function updateGameUI(){
+  document.getElementById("expFill").style.width=(game.exp/game.expMax*100)+"%";
+  document.getElementById("levelText").innerText=
+    `Level ${game.level} • EXP ${game.exp} / ${game.expMax}`;
+}
+
+function completeQuest(id){
   if(game.completed[id]) return;
-  game.completed[id] = true;
-  game.exp += 10;
+  game.completed[id]=true;
+  game.exp+=25;
 
-  if(game.exp >= game.expMax) levelUp();
-
-  save();
+  if(game.exp>=game.expMax){
+    game.level++;
+    game.exp=0;
+    game.expMax=Math.floor(game.expMax*1.25);
+  }
+  updateRank();
   renderQuests();
-  updateUI();
+  updateGameUI();
+  save();
 }
 
-function renderQuests() {
-  const box = document.getElementById("quests");
-  box.innerHTML = "";
-
-  quests.forEach(q => {
-    const done = game.completed[q.id];
-    const div = document.createElement("div");
-    div.className = "quest";
-    div.innerHTML = `
+function renderQuests(){
+  const qbox=document.getElementById("quests");
+  qbox.innerHTML="";
+  quests.forEach(q=>{
+    const done=game.completed[q.id];
+    const div=document.createElement("div");
+    div.className="quest";
+    div.innerHTML=`
       <span>${q.text}</span>
-      <button ${done ? "disabled" : ""}>
-        ${done ? "✓" : "Done"}
-      </button>
+      <button ${done?"disabled":""}>${done?"✓":"Done"}</button>
     `;
-    div.querySelector("button").onclick = () => completeQuest(q.id);
-    box.appendChild(div);
+    div.querySelector("button").onclick=()=>completeQuest(q.id);
+    qbox.appendChild(div);
   });
 }
 
-// INIT
-checkDayReset();
+function checkDay(){
+  const today=new Date().toDateString();
+  if(game.lastDay!==today){
+    game.completed={};
+    game.lastDay=today;
+  }
+}
+
+function devResetDay(){
+  game.completed={};
+  game.lastDay=new Date().toDateString();
+  renderQuests();
+  save();
+}
+
+/* ---------- RANK ---------- */
+function updateRank(){
+  const avg=Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
+  let rank="NOVICE";
+  if(avg>=3) rank="APPRENTICE";
+  if(avg>=6) rank="WARRIOR";
+  if(avg>=9) rank="MASTER";
+  document.getElementById("rankText").innerText="RANK: "+rank;
+}
+
+/* ---------- TABS ---------- */
+document.getElementById("tabStats").onclick=()=>{
+  statsMode.style.display="block";
+  gameMode.style.display="none";
+  tabStats.classList.add("active");
+  tabGame.classList.remove("active");
+};
+
+document.getElementById("tabGame").onclick=()=>{
+  statsMode.style.display="none";
+  gameMode.style.display="block";
+  tabGame.classList.add("active");
+  tabStats.classList.remove("active");
+};
+
+/* INIT */
+Object.keys(statConfig).forEach(createStat);
+checkDay();
 renderQuests();
-updateUI();
+updateRank();
+updateGameUI();
 save();
 </script>
 
