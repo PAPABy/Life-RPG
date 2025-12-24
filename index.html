@@ -287,10 +287,6 @@ function completeQuest(id){
   }
 
   let gain = getExpGain();
-  if(projectedLevel >= 8){
-    gain = Math.floor(base * 1.5);
-  }
-
   game.exp += gain;
 
   if(game.exp >= game.expMax){
@@ -303,6 +299,13 @@ function completeQuest(id){
   renderQuests();
   updateGameUI();
   save();
+}
+
+function getExpGain(){
+  if(game.level >= 8){
+    return 50;
+  }
+  return 25;
 }
 
 function renderQuests(){
@@ -367,6 +370,10 @@ function updateAvatar(){
   avatar.textContent = icon;
 }
 
+<button id="resetAvatar" style="margin-top:8px;width:100%">
+  Kembali ke Avatar Sistem
+</button>
+
 /* ---------- TABS ---------- */
 document.getElementById("tabStats").onclick=()=>{
   statsMode.style.display="block";
@@ -380,6 +387,12 @@ document.getElementById("tabGame").onclick=()=>{
   gameMode.style.display="block";
   tabGame.classList.add("active");
   tabStats.classList.remove("active");
+};
+
+document.getElementById("resetAvatar").onclick = () => {
+  avatarData = null;
+  updateAvatar();
+  save();
 };
 
 document.getElementById("avatarUpload").onchange=e=>{
