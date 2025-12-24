@@ -131,6 +131,16 @@ h1 { text-align:center; }
   transition:.3s;
 }
 
+.uploadBtn{
+  display:block;
+  margin:10px auto;
+  padding:6px 12px;
+  background:#1f2440;
+  border-radius:10px;
+  text-align:center;
+  font-size:14px;
+}
+
 input[type=range] {
   width:100%;
   margin-top:8px;
@@ -142,8 +152,11 @@ input[type=range] {
 
 <div class="card">
  <div class="avatar" id="avatar">🧙</div>
-<input type="file" accept="image/*" id="avatarUpload" style="margin-top:10px;width:100%">
-
+<label class="uploadBtn">
+  Ganti Avatar
+  <input type="file" accept="image/*" id="avatarUpload" hidden>
+</label>
+  
   <h1>Life RPG</h1>
   <div class="rank" id="rankText">RANK: NOVICE</div>
 
@@ -324,8 +337,12 @@ function updateAvatar(){
   const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
   const avatar = document.getElementById("avatar");
 
+  avatar.innerHTML = ""; // 🔴 PENTING
+
   if(avatarData){
-    avatar.innerHTML = `<img src="${avatarData}">`;
+    const img = document.createElement("img");
+    img.src = avatarData;
+    avatar.appendChild(img);
     return;
   }
 
@@ -334,7 +351,7 @@ function updateAvatar(){
   if(avg>=6) icon="🛡️";
   if(avg>=9) icon="👑";
 
-  avatar.innerText = icon;
+  avatar.textContent = icon;
 }
 
 /* ---------- TABS ---------- */
@@ -373,6 +390,7 @@ updateAvatar();
 updateRank();
 updateGameUI();
 save();
+document.getElementById("tabStats").click();
 </script>
 
 </body>
