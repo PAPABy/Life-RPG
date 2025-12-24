@@ -236,7 +236,6 @@ input[type=range] {
   color:#f1c40f;
   text-shadow:0 0 10px rgba(241,196,15,.8);
 }
-
 </style>
 </head>
 
@@ -441,8 +440,6 @@ function devResetDay(){
 }
 
 /* ---------- RANK ---------- */
-let lastRank = null;
-
 function updateRank(){
   const avg =
     Object.values(stats).reduce((a,b)=>a+b,0) /
