@@ -286,7 +286,7 @@ function completeQuest(id){
     projectedLevel++;
   }
 
-  let gain = base;
+  let gain = getExpGain();
   if(projectedLevel >= 8){
     gain = Math.floor(base * 1.5);
   }
@@ -313,7 +313,7 @@ function renderQuests(){
     const div=document.createElement("div");
     div.className="quest";
     div.innerHTML=`
-      <span>${q.text}</span>
+      <span>${q.text.split("(")[0]}(+${getExpGain()} EXP)</span>
       <button ${done?"disabled":""}>${done?"✓":"Done"}</button>
     `;
     div.querySelector("button").onclick=()=>completeQuest(q.id);
