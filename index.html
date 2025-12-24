@@ -21,6 +21,13 @@ body {
   margin:auto;
 }
 
+.avatar img{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+}
+
 .avatar {
   width:90px;
   height:90px;
@@ -134,7 +141,9 @@ input[type=range] {
 <body>
 
 <div class="card">
-  <div class="avatar">🧙</div>
+ <div class="avatar" id="avatar">🧙</div>
+<input type="file" accept="image/*" id="avatarUpload" style="margin-top:10px;width:100%">
+
   <h1>Life RPG</h1>
   <div class="rank" id="rankText">RANK: NOVICE</div>
 
@@ -171,6 +180,21 @@ const statConfig = {
   social:{label:"Social",color:"#2ecc71"},
   relationship:{label:"Relationship",color:"#ff6fae"}
 };
+
+let avatarData = null;
+
+if(saved){
+  const data = JSON.parse(saved);
+  stats = data.stats;
+  game = data.game;
+  avatarData = data.avatar || null;
+}
+
+function save(){
+  localStorage.setItem(STORAGE,JSON.stringify({
+    stats,game,avatar:avatarData
+  }));
+}
 
 let stats = {};
 Object.keys(statConfig).forEach(k=>stats[k]=5);
@@ -248,7 +272,9 @@ function updateGameUI(){
 function completeQuest(id){
   if(game.completed[id]) return;
   game.completed[id]=true;
-  game.exp+=25;
+  let gain = 25;
+if(game.level >= 8) gain = Math.floor(gain * 1.5);
+game.exp += gain;
 
   if(game.exp>=game.expMax){
     game.level++;
@@ -302,6 +328,23 @@ function updateRank(){
   document.getElementById("rankText").innerText="RANK: "+rank;
 }
 
+function updateAvatar(){
+  const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
+  const avatar = document.getElementById("avatar");
+
+  if(avatarData){
+    avatar.innerHTML = `<img src="${avatarData}">`;
+    return;
+  }
+
+  let icon="🧍";
+  if(avg>=3) icon="🧙";
+  if(avg>=6) icon="🛡️";
+  if(avg>=9) icon="👑";
+
+  avatar.innerText = icon;
+}
+
 /* ---------- TABS ---------- */
 document.getElementById("tabStats").onclick=()=>{
   statsMode.style.display="block";
@@ -317,10 +360,24 @@ document.getElementById("tabGame").onclick=()=>{
   tabStats.classList.remove("active");
 };
 
+document.getElementById("avatarUpload").onchange=e=>{
+  const file=e.target.files[0];
+  if(!file) return;
+
+  const reader=new FileReader();
+  reader.onload=()=>{
+    avatarData=reader.result;
+    updateAvatar();
+    save();
+  };
+  reader.readAsDataURL(file);
+};
+
 /* INIT */
 Object.keys(statConfig).forEach(createStat);
 checkDay();
 renderQuests();
+updateAvatar();
 updateRank();
 updateGameUI();
 save();
