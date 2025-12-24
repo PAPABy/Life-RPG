@@ -214,20 +214,29 @@ input[type=range] {
   100%{ opacity:0; transform:scale(1); }
 }
 /* ===== RANK ANIMATION ===== */
-.rank.rank-up{
-  animation:rankPop 1s ease;
+.rank{
+  transition:color .3s ease;
 }
 
-.rank.novice{ color:#7f8c8d; }
-.rank.apprentice{ color:#00ffcc; }
-.rank.warrior{ color:#ffd700; }
-.rank.master{ color:#ff4d4d; }
+.rank.rank-up{
+  animation:rankPop .8s ease;
+}
 
 @keyframes rankPop{
-  0%{ transform:scale(.6); opacity:0; }
-  40%{ transform:scale(1.3); opacity:1; text-shadow:0 0 20px currentColor; }
-  100%{ transform:scale(1); text-shadow:none; }
+  0%{ transform:scale(.8); opacity:0; }
+  40%{ transform:scale(1.3); opacity:1; }
+  100%{ transform:scale(1); }
 }
+
+/* WARNA TIAP RANK */
+.rank.novice{ color:#7f8c8d; }
+.rank.apprentice{ color:#2ecc71; }
+.rank.warrior{ color:#3498db; }
+.rank.master{
+  color:#f1c40f;
+  text-shadow:0 0 10px rgba(241,196,15,.8);
+}
+
 </style>
 </head>
 
@@ -432,9 +441,12 @@ function devResetDay(){
 }
 
 /* ---------- RANK ---------- */
+let lastRank = null;
+
 function updateRank(){
-  const avg = Object.values(stats)
-    .reduce((a,b)=>a+b,0) / Object.keys(stats).length;
+  const avg =
+    Object.values(stats).reduce((a,b)=>a+b,0) /
+    Object.keys(stats).length;
 
   let rank = "NOVICE";
   let rankClass = "novice";
@@ -454,14 +466,16 @@ function updateRank(){
 
   const rankEl = document.getElementById("rankText");
 
-  // trigger animasi hanya jika rank BERUBAH
+  // HANYA ANIMASI JIKA RANK BERUBAH
   if(lastRank && lastRank !== rank){
     rankEl.classList.add("rank-up");
-    setTimeout(()=>rankEl.classList.remove("rank-up"),1000);
+    setTimeout(()=>{
+      rankEl.classList.remove("rank-up");
+    },800);
   }
 
-  rankEl.textContent = "RANK: " + rank;
-  rankEl.className = `rank ${rankClass}`;
+  rankEl.className = "rank " + rankClass;
+  rankEl.innerText = "RANK: " + rank;
 
   lastRank = rank;
 }
