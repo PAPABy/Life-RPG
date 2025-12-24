@@ -321,8 +321,6 @@ let game = {
 
 let avatarData = null;
 
-let lastRank = null;
-
 // LOAD
 const saved = localStorage.getItem(STORAGE);
 if(saved){
@@ -440,6 +438,8 @@ function devResetDay(){
 }
 
 /* ---------- RANK ---------- */
+let lastRank = null;
+
 function updateRank(){
   const avg =
     Object.values(stats).reduce((a,b)=>a+b,0) /
@@ -476,6 +476,7 @@ function updateRank(){
 
   lastRank = rank;
 }
+
 
 function updateAvatar(){
   const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
