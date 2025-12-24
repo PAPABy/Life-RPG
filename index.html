@@ -255,17 +255,6 @@ input[type=range] {
 </div>
 
 <script>
-const STORAGE = "life_rpg_full";
-
-const statConfig = {
-  discipline:{label:"Discipline",color:"#4facfe"},
-  physical:{label:"Physical",color:"#ff4d4d"},
-  financial:{label:"Financial",color:"#ffd700"},
-  mental:{label:"Mental",color:"#b983ff"},
-  social:{label:"Social",color:"#2ecc71"},
-  relationship:{label:"Relationship",color:"#ff6fae"}
-};
-
 function triggerLevelUpFX(){
   const card = document.querySelector(".card");
   const fx = document.getElementById("levelUpFx");
@@ -278,6 +267,17 @@ function triggerLevelUpFX(){
     fx.classList.remove("show");
   },1000);
 }
+
+const STORAGE = "life_rpg_full";
+
+const statConfig = {
+  discipline:{label:"Discipline",color:"#4facfe"},
+  physical:{label:"Physical",color:"#ff4d4d"},
+  financial:{label:"Financial",color:"#ffd700"},
+  mental:{label:"Mental",color:"#b983ff"},
+  social:{label:"Social",color:"#2ecc71"},
+  relationship:{label:"Relationship",color:"#ff6fae"}
+};
 
 function save(){
   localStorage.setItem(STORAGE,JSON.stringify({
