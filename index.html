@@ -276,16 +276,29 @@ function updateGameUI(){
 
 function completeQuest(id){
   if(game.completed[id]) return;
-  game.completed[id]=true;
-  let gain = 25;
-if(game.level >= 8) gain = Math.floor(gain * 2); // x2
-game.exp += gain;
+  game.completed[id] = true;
 
-  if(game.exp>=game.expMax){
-    game.level++;
-    game.exp=0;
-    game.expMax=Math.floor(game.expMax*1.25);
+  let base = 25;
+  let projectedLevel = game.level;
+
+  // cek apakah quest ini akan bikin level naik
+  if(game.exp + base >= game.expMax){
+    projectedLevel++;
   }
+
+  let gain = base;
+  if(projectedLevel >= 8){
+    gain = Math.floor(base * 1.5);
+  }
+
+  game.exp += gain;
+
+  if(game.exp >= game.expMax){
+    game.level++;
+    game.exp = 0;
+    game.expMax = Math.floor(game.expMax * 1.25);
+  }
+
   updateRank();
   renderQuests();
   updateGameUI();
