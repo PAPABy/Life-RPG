@@ -156,7 +156,10 @@ input[type=range] {
   Ganti Avatar
   <input type="file" accept="image/*" id="avatarUpload" hidden>
 </label>
-  
+<button id="resetAvatar" style="margin-top:8px;width:100%">
+  Kembali ke Avatar Sistem
+</button>
+
   <h1>Life RPG</h1>
   <div class="rank" id="rankText">RANK: NOVICE</div>
 
@@ -268,6 +271,14 @@ const quests = [
   {id:"social",text:"Social Interaction (+25 EXP)"}
 ];
 
+function getExpGain(){
+  let base = 25;
+  if(game.level >= 8){
+    return Math.floor(base * 1.5); // 37
+  }
+  return base;
+}
+
 function updateGameUI(){
   document.getElementById("expFill").style.width=(game.exp/game.expMax*100)+"%";
   document.getElementById("levelText").innerText=
@@ -287,7 +298,7 @@ function completeQuest(id){
   }
 
   let gain = getExpGain();
-  game.exp += gain;
+game.exp += gain;
 
   if(game.exp >= game.expMax){
     game.level++;
@@ -299,13 +310,6 @@ function completeQuest(id){
   renderQuests();
   updateGameUI();
   save();
-}
-
-function getExpGain(){
-  if(game.level >= 8){
-    return 50;
-  }
-  return 25;
 }
 
 function renderQuests(){
@@ -370,10 +374,6 @@ function updateAvatar(){
   avatar.textContent = icon;
 }
 
-<button id="resetAvatar" style="margin-top:8px;width:100%">
-  Kembali ke Avatar Sistem
-</button>
-
 /* ---------- TABS ---------- */
 document.getElementById("tabStats").onclick=()=>{
   statsMode.style.display="block";
@@ -389,12 +389,6 @@ document.getElementById("tabGame").onclick=()=>{
   tabStats.classList.remove("active");
 };
 
-document.getElementById("resetAvatar").onclick = () => {
-  avatarData = null;
-  updateAvatar();
-  save();
-};
-
 document.getElementById("avatarUpload").onchange=e=>{
   const file=e.target.files[0];
   if(!file) return;
@@ -406,6 +400,11 @@ document.getElementById("avatarUpload").onchange=e=>{
     save();
   };
   reader.readAsDataURL(file);
+};
+
+document.getElementById("resetAvatar").onclick = () => {
+  localStorage.removeItem("avatar");
+  document.getElementById("avatar").src = "avatar.png";
 };
 
 /* INIT */
