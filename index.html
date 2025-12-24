@@ -181,15 +181,6 @@ const statConfig = {
   relationship:{label:"Relationship",color:"#ff6fae"}
 };
 
-let avatarData = null;
-
-if(saved){
-  const data = JSON.parse(saved);
-  stats = data.stats;
-  game = data.game;
-  avatarData = data.avatar || null;
-}
-
 function save(){
   localStorage.setItem(STORAGE,JSON.stringify({
     stats,game,avatar:avatarData
@@ -207,18 +198,18 @@ let game = {
   lastDay:new Date().toDateString()
 };
 
+let avatarData = null;
+
 // LOAD
 const saved = localStorage.getItem(STORAGE);
 if(saved){
   const data = JSON.parse(saved);
-  stats = data.stats;
-  game = data.game;
+  stats = data.stats || stats;
+  game = data.game || game;
+  avatarData = data.avatar || null;
 }
 
 // SAVE
-function save(){
-  localStorage.setItem(STORAGE,JSON.stringify({stats,game}));
-}
 
 /* ---------- STATS ---------- */
 const statsBox = document.getElementById("statsMode");
@@ -243,6 +234,7 @@ function createStat(k){
     stats[k]=parseFloat(e.target.value);
     updateStatUI(k);
     updateRank();
+    updateAvatar();
     save();
   };
 
