@@ -278,7 +278,7 @@ function completeQuest(id){
   if(game.completed[id]) return;
   game.completed[id]=true;
   let gain = 25;
-if(game.level >= 8) gain = Math.floor(gain * 1.5);
+if(game.level >= 8) gain = Math.floor(gain * 2); // x2
 game.exp += gain;
 
   if(game.exp>=game.expMax){
