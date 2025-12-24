@@ -272,11 +272,7 @@ const quests = [
 ];
 
 function getExpGain(){
-  let base = 25;
-  if(game.level >= 8){
-    return Math.floor(base * 1.5); // 37
-  }
-  return base;
+  return game.level >= 8 ? 50 : 25;
 }
 
 function updateGameUI(){
@@ -287,22 +283,14 @@ function updateGameUI(){
 
 function completeQuest(id){
   if(game.completed[id]) return;
+
   game.completed[id] = true;
-
-  let base = 25;
-  let projectedLevel = game.level;
-
-  // cek apakah quest ini akan bikin level naik
-  if(game.exp + base >= game.expMax){
-    projectedLevel++;
-  }
-
   let gain = getExpGain();
-game.exp += gain;
+  game.exp += gain;
 
-  if(game.exp >= game.expMax){
+  while(game.exp >= game.expMax){
+    game.exp -= game.expMax;
     game.level++;
-    game.exp = 0;
     game.expMax = Math.floor(game.expMax * 1.25);
   }
 
@@ -357,7 +345,7 @@ function updateAvatar(){
   const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
   const avatar = document.getElementById("avatar");
 
-  avatar.innerHTML = ""; // 🔴 PENTING
+  avatar.innerHTML = "";
 
   if(avatarData){
     const img = document.createElement("img");
@@ -403,8 +391,9 @@ document.getElementById("avatarUpload").onchange=e=>{
 };
 
 document.getElementById("resetAvatar").onclick = () => {
-  localStorage.removeItem("avatar");
-  document.getElementById("avatar").src = "avatar.png";
+  avatarData = null;
+  updateAvatar();
+  save();
 };
 
 /* INIT */
