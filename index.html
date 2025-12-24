@@ -141,6 +141,29 @@ h1 { text-align:center; }
   font-size:14px;
 }
 
+.reset-avatar-btn{
+  width:100%;
+  margin-top:10px;
+  padding:8px 12px;
+  background:transparent;
+  border:1px solid #2a3058;
+  color:#bfc6ff;
+  border-radius:12px;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  cursor:pointer;
+  transition:all .2s ease;
+}
+
+.reset-avatar-btn:hover{
+  background:#1a1f3c;
+  color:#00ffcc;
+  border-color:#00ffcc;
+}
+
 input[type=range] {
   width:100%;
   margin-top:8px;
@@ -156,8 +179,8 @@ input[type=range] {
   Ganti Avatar
   <input type="file" accept="image/*" id="avatarUpload" hidden>
 </label>
-<button id="resetAvatar" style="margin-top:8px;width:100%">
-  Kembali ke Avatar Sistem
+<button id="resetAvatar" class="reset-avatar-btn">
+  ♻️ First Profile
 </button>
 
   <h1>Life RPG</h1>
