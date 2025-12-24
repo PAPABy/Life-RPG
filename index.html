@@ -168,12 +168,58 @@ input[type=range] {
   width:100%;
   margin-top:8px;
 }
+/* ===== LEVEL UP EFFECT ===== */
+.level-up-fx{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  font-weight:bold;
+  color:#ffd700;
+  background:radial-gradient(circle, rgba(255,215,0,0.15), transparent 60%);
+  opacity:0;
+  pointer-events:none;
+  z-index:5;
+}
+
+.card.level-up{
+  animation:cardGlow 1s ease;
+}
+
+.card.level-up .avatar{
+  animation:auraPulse 1s ease;
+}
+
+@keyframes cardGlow{
+  0%{ box-shadow:0 0 0 rgba(255,215,0,0); }
+  50%{ box-shadow:0 0 40px rgba(255,215,0,.8); }
+  100%{ box-shadow:0 0 0 rgba(255,215,0,0); }
+}
+
+@keyframes auraPulse{
+  0%{ transform:scale(1); box-shadow:0 0 0 rgba(0,255,204,0); }
+  50%{ transform:scale(1.1); box-shadow:0 0 25px rgba(0,255,204,.9); }
+  100%{ transform:scale(1); box-shadow:0 0 0 rgba(0,255,204,0); }
+}
+
+.level-up-fx.show{
+  animation:levelText 1s ease;
+}
+
+@keyframes levelText{
+  0%{ opacity:0; transform:scale(.6); }
+  30%{ opacity:1; transform:scale(1.2); }
+  100%{ opacity:0; transform:scale(1); }
+}
 </style>
 </head>
 
 <body>
 
 <div class="card">
+ <div id="levelUpFx" class="level-up-fx">LEVEL UP!</div>
  <div class="avatar" id="avatar">🧙</div>
 <label class="uploadBtn">
   Ganti Avatar
@@ -219,6 +265,19 @@ const statConfig = {
   social:{label:"Social",color:"#2ecc71"},
   relationship:{label:"Relationship",color:"#ff6fae"}
 };
+
+function triggerLevelUpFX(){
+  const card = document.querySelector(".card");
+  const fx = document.getElementById("levelUpFx");
+
+  card.classList.add("level-up");
+  fx.classList.add("show");
+
+  setTimeout(()=>{
+    card.classList.remove("level-up");
+    fx.classList.remove("show");
+  },1000);
+}
 
 function save(){
   localStorage.setItem(STORAGE,JSON.stringify({
@@ -311,11 +370,12 @@ function completeQuest(id){
   let gain = getExpGain();
   game.exp += gain;
 
-  while(game.exp >= game.expMax){
-    game.exp -= game.expMax;
-    game.level++;
-    game.expMax = Math.floor(game.expMax * 1.25);
-  }
+  if(game.exp >= game.expMax){
+  game.level++;
+  game.exp = 0;
+  game.expMax = Math.floor(game.expMax * 1.25);
+  triggerLevelUpFX();
+}
 
   updateRank();
   renderQuests();
