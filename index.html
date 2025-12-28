@@ -433,6 +433,13 @@ document.querySelectorAll(".mood-options button").forEach(btn=>{
   }
 });
 
+let currentMood = "neutral";
+
+// load mood
+if(saved){
+  currentMood = JSON.parse(saved).mood || "neutral";
+}
+
 function updateAICoach(){
   const msg = document.getElementById("aiMessage");
 
