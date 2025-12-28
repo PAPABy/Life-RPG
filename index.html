@@ -522,9 +522,8 @@ if(saved){
   avatarData = data.avatar || null;
 }
 
-// ===== MOOD STATE =====
+// MOOD
 let currentMood = "neutral";
-
 if(saved){
   const data = JSON.parse(saved);
   currentMood = data.mood || "neutral";
