@@ -6,790 +6,267 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body {
+body{
   background:#0b0f1a;
   color:white;
-  font-family:Arial, sans-serif;
+  font-family:Arial,sans-serif;
   padding:20px;
 }
-
-.card {
+.card{
   background:#11162a;
   border-radius:24px;
   padding:20px;
   max-width:500px;
   margin:auto;
+  position:relative;
 }
+h1{text-align:center}
 
-.avatar img{
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-.avatar {
-  width:90px;
-  height:90px;
+/* AVATAR */
+.avatar{
+  width:90px;height:90px;
   border-radius:50%;
   margin:10px auto;
   background:linear-gradient(135deg,#00ffcc,#0066ff);
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display:flex;align-items:center;justify-content:center;
   font-size:40px;
-}
-
-h1 { text-align:center; }
-
-.tabs {
-  display:flex;
-  gap:10px;
-  margin:10px 0 20px;
-}
-
-.tabs button {
-  flex:1;
-  background:#1f2440;
-  border:none;
-  color:white;
-  padding:8px;
-  border-radius:10px;
-}
-
-.tabs button.active {
-  background:#00ffcc;
-  color:black;
-}
-
-.rank {
-  text-align:center;
-  margin-bottom:10px;
-  color:#00ffcc;
-}
-
-/* EXP */
-.exp-bar {
-  height:14px;
-  background:#1f2440;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.exp-fill {
-  height:100%;
-  background:linear-gradient(90deg,#ffd700,#ff9f00);
-  width:0%;
-  transition:.3s;
-}
-
-.level {
-  text-align:center;
-  font-size:14px;
-  margin:6px 0 20px;
-}
-
-.quest {
-  background:#1a1f3c;
-  padding:12px;
-  border-radius:14px;
-  margin-bottom:10px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.quest button {
-  background:#00ffcc;
-  border:none;
-  border-radius:8px;
-  padding:6px 10px;
-}
-
-/* STATS */
-.stat {
-  margin-bottom:18px;
-}
-
-.label {
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:6px;
-}
-
-.bar {
-  height:12px;
-  background:#1f2440;
-  border-radius:10px;
-  overflow:hidden;
-}
-
-.fill {
-  height:100%;
-  border-radius:10px;
-  transition:.3s;
-}
-
-.uploadBtn{
-  display:block;
-  margin:10px auto;
-  padding:6px 12px;
-  background:#1f2440;
-  border-radius:10px;
-  text-align:center;
-  font-size:14px;
-}
-
-.reset-avatar-btn{
-  width:100%;
-  margin-top:10px;
-  padding:8px 12px;
-  background:transparent;
-  border:1px solid #2a3058;
-  color:#bfc6ff;
-  border-radius:12px;
-  font-size:14px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  gap:6px;
-  cursor:pointer;
-  transition:all .2s ease;
-}
-
-.reset-avatar-btn:hover{
-  background:#1a1f3c;
-  color:#00ffcc;
-  border-color:#00ffcc;
-}
-
-input[type=range] {
-  width:100%;
-  margin-top:8px;
-}
-/* ===== LEVEL UP EFFECT ===== */
-.level-up-fx{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:32px;
-  font-weight:bold;
-  color:#ffd700;
-  background:radial-gradient(circle, rgba(255,215,0,0.15), transparent 60%);
-  opacity:0;
-  pointer-events:none;
-  z-index:5;
-}
-
-.card.level-up{
-  animation:cardGlow 1s ease;
-}
-
-.card.level-up .avatar{
-  animation:auraPulse 1s ease;
-}
-
-@keyframes cardGlow{
-  0%{ box-shadow:0 0 0 rgba(255,215,0,0); }
-  50%{ box-shadow:0 0 40px rgba(255,215,0,.8); }
-  100%{ box-shadow:0 0 0 rgba(255,215,0,0); }
-}
-
-@keyframes auraPulse{
-  0%{ transform:scale(1); box-shadow:0 0 0 rgba(0,255,204,0); }
-  50%{ transform:scale(1.1); box-shadow:0 0 25px rgba(0,255,204,.9); }
-  100%{ transform:scale(1); box-shadow:0 0 0 rgba(0,255,204,0); }
-}
-
-.level-up-fx.show{
-  animation:levelText 1s ease;
-}
-
-@keyframes levelText{
-  0%{ opacity:0; transform:scale(.6); }
-  30%{ opacity:1; transform:scale(1.2); }
-  100%{ opacity:0; transform:scale(1); }
-}
-/* ===== RANK ANIMATION ===== */
-.rank{
-  transition:color .3s ease;
-}
-
-.rank.rank-up{
-  animation:rankPop .8s ease;
-}
-
-@keyframes rankPop{
-  0%{ transform:scale(.8); opacity:0; }
-  40%{ transform:scale(1.3); opacity:1; }
-  100%{ transform:scale(1); }
-}
-
-/* WARNA TIAP RANK */
-.rank.novice{ color:#7f8c8d; }
-.rank.apprentice{ color:#2ecc71; }
-.rank.warrior{ color:#3498db; }
-.rank.master{
-  color:#f1c40f;
-  text-shadow:0 0 10px rgba(241,196,15,.8);
-}
-
-/* ===== AVATAR AURA BY RANK ===== */
-.avatar{
   position:relative;
-  z-index:2;
+}
+.avatar img{
+  width:100%;height:100%;
+  border-radius:50%;object-fit:cover;
 }
 
-/* AURA BASE */
+/* AURA */
 .avatar::after{
   content:"";
   position:absolute;
   inset:-8px;
   border-radius:50%;
+  filter:blur(12px);
   opacity:0;
   z-index:-1;
-  filter:blur(12px);
-  transition:opacity .3s ease;
 }
+.avatar.aura-apprentice::after{background:#2ecc71;opacity:.7}
+.avatar.aura-warrior::after{background:#3498db;opacity:.9;animation:pulse 2s infinite}
+.avatar.aura-master::after{background:#f1c40f;opacity:1;animation:pulseStrong 1.6s infinite}
 
-/* APPRENTICE */
-.avatar.aura-apprentice::after{
-  background:rgba(46,204,113,.8);
-  opacity:.8;
-}
+@keyframes pulse{0%{transform:scale(.9)}50%{transform:scale(1.1)}100%{transform:scale(.9)}}
+@keyframes pulseStrong{0%{transform:scale(.9)}50%{transform:scale(1.25)}100%{transform:scale(.9)}}
 
-/* WARRIOR */
-.avatar.aura-warrior::after{
-  background:rgba(52,152,219,.9);
-  opacity:.9;
-  animation:auraPulse 2s infinite;
+/* BUTTONS */
+.uploadBtn,.reset-avatar-btn,.dev-reset-btn{
+  width:100%;margin-top:8px;padding:8px;
+  border-radius:12px;font-size:14px;
 }
-
-/* MASTER */
-.avatar.aura-master::after{
-  background:rgba(241,196,15,1);
-  opacity:1;
-  animation:auraPulseStrong 1.6s infinite;
+.uploadBtn{background:#1f2440;text-align:center}
+.reset-avatar-btn{
+  background:transparent;border:1px solid #2a3058;color:#bfc6ff;
 }
-
-@keyframes auraPulse{
-  0%{ transform:scale(.9); }
-  50%{ transform:scale(1.1); }
-  100%{ transform:scale(.9); }
-}
-
-@keyframes auraPulseStrong{
-  0%{ transform:scale(.9); }
-  50%{ transform:scale(1.25); }
-  100%{ transform:scale(.9); }
-}
+.reset-avatar-btn:hover{background:#1a1f3c;color:#00ffcc}
 .dev-reset-btn{
-  width:100%;
-  margin-top:8px;
-  padding:8px;
-  background:#2a2f55;
-  color:#ffbaba;
-  border:1px dashed #ff6b6b;
-  border-radius:12px;
-  font-size:14px;
+  background:#2a2f55;border:1px dashed #ff6b6b;color:#ffbaba;
 }
 
-/* ===== AI COACH ===== */
-.ai-coach{
-  margin-top:20px;
-  padding:14px;
-  border-radius:18px;
-  background:linear-gradient(135deg,#1a1f3c,#10162f);
-  border:1px solid #2a3058;
+/* TABS */
+.tabs{display:flex;gap:10px;margin:10px 0 20px}
+.tabs button{
+  flex:1;background:#1f2440;border:none;color:white;
+  padding:8px;border-radius:10px;
+}
+.tabs button.active{background:#00ffcc;color:black}
+
+/* RANK */
+.rank{text-align:center;margin-bottom:10px;color:#00ffcc}
+.rank-up{animation:rankPop .8s}
+@keyframes rankPop{0%{transform:scale(.8);opacity:0}40%{transform:scale(1.3);opacity:1}100%{transform:scale(1)}}
+
+/* EXP */
+.exp-bar{height:14px;background:#1f2440;border-radius:10px;overflow:hidden}
+.exp-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ff9f00);transition:.3s}
+.level{text-align:center;font-size:14px;margin:6px 0 20px}
+
+/* QUEST */
+.quest{
+  background:#1a1f3c;padding:12px;border-radius:14px;
+  margin-bottom:10px;display:flex;justify-content:space-between;
 }
 
-.ai-title{
-  font-size:14px;
-  color:#00ffcc;
-  margin-bottom:6px;
+/* LEVEL UP FX */
+.level-up-fx{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;font-weight:bold;
+  color:#ffd700;opacity:0;pointer-events:none;
+}
+.level-up-fx.show{animation:levelText 1s}
+@keyframes levelText{
+  0%{opacity:0;transform:scale(.6)}
+  30%{opacity:1;transform:scale(1.2)}
+  100%{opacity:0}
 }
 
-.ai-message{
-  font-size:14px;
-  line-height:1.4;
-  color:#e0e6ff;
+/* AI & MOOD */
+.ai-coach,.mood-box{
+  margin-top:20px;padding:14px;border-radius:18px;
+  background:#141a33;border:1px solid #2a3058;
 }
-
-/* ===== MOOD INPUT ===== */
-.mood-box{
-  margin-top:20px;
-  padding:14px;
-  border-radius:18px;
-  background:#141a33;
-  border:1px solid #2a3058;
-}
-
-.mood-title{
-  font-size:14px;
-  margin-bottom:8px;
-  color:#bfc6ff;
-}
-
-.mood-options{
-  display:flex;
-  justify-content:space-between;
-}
-
+.mood-options{display:flex;justify-content:space-between}
 .mood-options button{
-  font-size:22px;
-  background:#1f2440;
-  border:none;
-  border-radius:12px;
-  padding:8px 10px;
-  cursor:pointer;
-  transition:.2s;
+  font-size:22px;background:#1f2440;border:none;
+  border-radius:12px;padding:8px;
 }
-
-.mood-options button.active,
-.mood-options button:hover{
-  background:#00ffcc;
-}
+.mood-options button.active{background:#00ffcc}
 </style>
 </head>
 
 <body>
-
 <div class="card">
- <div id="levelUpFx" class="level-up-fx">LEVEL UP!</div>
- <div class="avatar" id="avatar">🧙</div>
+<div id="levelUpFx" class="level-up-fx">LEVEL UP!</div>
+
+<div class="avatar" id="avatar">🧙</div>
+
 <label class="uploadBtn">
-  Ganti Avatar
-  <input type="file" accept="image/*" id="avatarUpload" hidden>
+Ganti Avatar
+<input type="file" id="avatarUpload" hidden>
 </label>
-<button id="resetAvatar" class="reset-avatar-btn">
-  ♻️ First Profile
-</button>
 
-  <h1>Life RPG</h1>
-  <div class="rank" id="rankText">RANK: NOVICE</div>
+<button id="resetAvatar" class="reset-avatar-btn">♻️ First Profile</button>
 
-  <div class="tabs">
-    <button id="tabStats" class="active">Stats</button>
-    <button id="tabGame">Game</button>
-  </div>
+<h1>Life RPG</h1>
+<div id="rankText" class="rank">RANK: NOVICE</div>
 
-  <!-- STATS MODE -->
-  <div id="statsMode"></div>
-  <div class="mood-box">
-  <div class="mood-title">🌤️ Mood Hari Ini</div>
-  <div class="mood-options">
-    <button data-mood="great">😄</button>
-    <button data-mood="good">🙂</button>
-    <button data-mood="neutral">😐</button>
-    <button data-mood="tired">😫</button>
-    <button data-mood="bad">😔</button>
-  </div>
+<div class="tabs">
+<button id="tabStats" class="active">Stats</button>
+<button id="tabGame">Game</button>
 </div>
 
-  <div id="aiCoach" class="ai-coach">
-  <div class="ai-title">🤖 AI Coach</div>
-  <div id="aiMessage" class="ai-message">
-    Mulai bangun karaktermu hari ini.
-  </div>
+<div id="statsMode"></div>
+
+<div class="mood-box">
+<div>🌤️ Mood Hari Ini</div>
+<div class="mood-options">
+<button data-mood="great">😄</button>
+<button data-mood="good">🙂</button>
+<button data-mood="neutral">😐</button>
+<button data-mood="tired">😫</button>
+<button data-mood="bad">😔</button>
+</div>
 </div>
 
-  <!-- GAME MODE -->
-  <div id="gameMode" style="display:none">
-    <div class="exp-bar"><div class="exp-fill" id="expFill"></div></div>
-    <div class="level" id="levelText"></div>
+<div class="ai-coach">
+<div id="aiMessage">Mulai bangun karaktermu hari ini.</div>
+</div>
 
-    <h3>Daily Quests</h3>
-    <div id="quests"></div>
+<div id="gameMode" style="display:none">
+<div class="exp-bar"><div id="expFill" class="exp-fill"></div></div>
+<div id="levelText" class="level"></div>
+<div id="quests"></div>
 
-    <button onclick="devResetDay()" style="margin-top:10px;width:100%">
-      🔄 Dev: Reset Day
-    </button>
-    <button onclick="devResetGame()" class="dev-reset-btn">
-  🧪 Dev: Reset Level Game
-</button>
-  </div>
+<button onclick="devResetDay()">🔄 Dev: Reset Day</button>
+<button onclick="devResetGame()" class="dev-reset-btn">🧪 Dev: Reset Level Game</button>
+</div>
 </div>
 
 <script>
-// MOOD
-let currentMood = "neutral";
-if(saved){
-  const data = JSON.parse(saved);
-  currentMood = data.mood || "neutral";
-}
-  
-document.querySelectorAll(".mood-options button").forEach(btn=>{
-  btn.onclick = ()=>{
-    document
-      .querySelectorAll(".mood-options button")
-      .forEach(b=>b.classList.remove("active"));
-
-    btn.classList.add("active");
-    currentMood = btn.dataset.mood;
-
-    updateAICoach();
-    save();
-  };
-
-  // restore active
-  if(btn.dataset.mood === currentMood){
-    btn.classList.add("active");
-  }
-});
-
-function updateAICoach(){
-  const msg = document.getElementById("aiMessage");
-
-  // stat terendah
-  let lowestKey = null;
-  let lowestValue = Infinity;
-
-  for(const k in stats){
-    if(stats[k] < lowestValue){
-      lowestValue = stats[k];
-      lowestKey = k;
-    }
-  }
-
-  const statName = statConfig[lowestKey].label;
-  let text = "";
-
-  // respon berbasis mood
-  if(currentMood === "great"){
-    text = `Energi kamu bagus hari ini. Manfaatkan untuk meningkatkan ${statName}.`;
-  }
-  else if(currentMood === "good"){
-    text = `Mood kamu stabil. Sedikit progres di ${statName} akan berdampak besar.`;
-  }
-  else if(currentMood === "neutral"){
-    text = `Hari biasa tidak apa-apa. Fokus ringan pada ${statName}.`;
-  }
-  else if(currentMood === "tired"){
-    text = `Kamu terlihat lelah. Jangan memaksa, rawat ${statName} dengan cara lembut.`;
-  }
-  else if(currentMood === "bad"){
-    text = `Hari berat ya. Prioritaskan dirimu dulu, terutama ${statName}. Kamu tidak sendiri.`;
-  }
-
-  msg.innerText = text;
-}
-
-function triggerLevelUpFX(){
-  const card = document.querySelector(".card");
-  const fx = document.getElementById("levelUpFx");
-
-  card.classList.add("level-up");
-  fx.classList.add("show");
-
-  setTimeout(()=>{
-    card.classList.remove("level-up");
-    fx.classList.remove("show");
-  },1000);
-}
-
-const STORAGE = "life_rpg_full";
-
-const statConfig = {
-  discipline:{label:"Discipline",color:"#4facfe"},
-  physical:{label:"Physical",color:"#ff4d4d"},
-  financial:{label:"Financial",color:"#ffd700"},
-  mental:{label:"Mental",color:"#b983ff"},
-  social:{label:"Social",color:"#2ecc71"},
-  relationship:{label:"Relationship",color:"#ff6fae"}
-};
-
-function save(){
-  localStorage.setItem(STORAGE,JSON.stringify({
-    stats, game, avatar: avatarData, mood: currentMood
-  }));
-}
-
-let stats = {};
-Object.keys(statConfig).forEach(k=>stats[k]=5);
-
-let game = {
-  level:1,
-  exp:0,
-  expMax:100,
-  completed:{},
-  lastDay:new Date().toDateString()
-};
-
-let avatarData = null;
-
+/* ===== CORE STATE ===== */
+const STORAGE="life_rpg_full";
+let currentMood="neutral";
+let avatarData=null;
 let saveTimer;
+
+/* SAVE (THROTTLED) */
 function save(){
   clearTimeout(saveTimer);
-  saveTimer = setTimeout(()=>{
-    localStorage.setItem(STORAGE,JSON.stringify({
-      stats, game, avatar: avatarData, mood: currentMood
-    }));
+  saveTimer=setTimeout(()=>{
+    localStorage.setItem(STORAGE,JSON.stringify({stats,game,avatar:avatarData,mood:currentMood}));
   },300);
 }
 
-// LOAD
-const saved = localStorage.getItem(STORAGE);
+/* LOAD */
+const saved=localStorage.getItem(STORAGE);
+let stats={discipline:5,physical:5,financial:5,mental:5,social:5,relationship:5};
+let game={level:1,exp:0,expMax:100,completed:{},lastDay:new Date().toDateString()};
+
 if(saved){
-  const data = JSON.parse(saved);
-  stats = data.stats || stats;
-  game = data.game || game;
-  avatarData = data.avatar || null;
+  const d=JSON.parse(saved);
+  stats=d.stats||stats;
+  game=d.game||game;
+  avatarData=d.avatar||null;
+  currentMood=d.mood||"neutral";
 }
 
-// SAVE
+/* EXP */
+function getExpGain(){return game.level>=8?50:25}
 
-/* ---------- STATS ---------- */
-const statsBox = document.getElementById("statsMode");
-
-function createStat(k){
-  const s = statConfig[k];
-  const div = document.createElement("div");
-  div.className="stat";
-  div.innerHTML=`
-    <div class="label">
-      <span>${s.label}</span>
-      <span id="${k}Value"></span>
-    </div>
-    <div class="bar">
-      <div class="fill" id="${k}Bar" style="background:${s.color}"></div>
-    </div>
-    <input id="${k}Input" type="range" min="0" max="10" step="0.1">
-  `;
-  statsBox.appendChild(div);
-
-  document.getElementById(k+"Input").oninput=e=>{
-    stats[k]=parseFloat(e.target.value);
-    updateStatUI(k);
-    updateRank();
-    updateAvatar();
-    updateAICoach();
-    save();
-  };
-
-  updateStatUI(k);
+/* LEVEL UP FX */
+function triggerLevelUpFX(){
+  document.getElementById("levelUpFx").classList.add("show");
+  setTimeout(()=>levelUpFx.classList.remove("show"),1000);
 }
 
-function updateStatUI(k){
-  document.getElementById(k+"Value").innerText=stats[k].toFixed(1);
-  document.getElementById(k+"Bar").style.width=(stats[k]*10)+"%";
-  document.getElementById(k+"Input").value=stats[k];
-}
-
-/* ---------- GAME ---------- */
-const quests = [
-  {id:"discipline",text:"Discipline Task"},
-  {id:"physical",text:"Physical Activity"},
-  {id:"mental",text:"Mental Care"},
-  {id:"social",text:"Social Interaction"}
+/* QUEST */
+const quests=[
+{id:"discipline",text:"Discipline Task"},
+{id:"physical",text:"Physical Activity"},
+{id:"mental",text:"Mental Care"},
+{id:"social",text:"Social Interaction"}
 ];
 
-function getExpGain(){
-  return game.level >= 8 ? 50 : 25;
-}
-
-function updateGameUI(){
-  document.getElementById("expFill").style.width=(game.exp/game.expMax*100)+"%";
-  document.getElementById("levelText").innerText=
-    `Level ${game.level} • EXP ${game.exp} / ${game.expMax}`;
-}
-
 function completeQuest(id){
-  if(game.completed[id]) return;
-
-  game.completed[id] = true;
-  let gain = getExpGain();
-  game.exp += gain;
-
-  iif(game.exp >= game.expMax){
-  game.exp -= game.expMax;
-  game.level++;
-  game.expMax = Math.floor(game.expMax * 1.25);
-  triggerLevelUpFX();
-}
-
-  updateRank();
-  renderQuests();
-  updateGameUI();
-  updateAICoach();
-  save();
+  if(game.completed[id])return;
+  game.completed[id]=true;
+  game.exp+=getExpGain();
+  if(game.exp>=game.expMax){
+    game.exp-=game.expMax;
+    game.level++;
+    game.expMax=Math.floor(game.expMax*1.25);
+    triggerLevelUpFX();
+  }
+  updateGameUI();renderQuests();save();
 }
 
 function renderQuests(){
-  const qbox=document.getElementById("quests");
-  qbox.innerHTML="";
+  questsBox.innerHTML="";
   quests.forEach(q=>{
     const done=game.completed[q.id];
-    const div=document.createElement("div");
-    div.className="quest";
-    div.innerHTML=`
-      <span>${q.text.split("(")[0]}(+${getExpGain()} EXP)</span>
-      <button ${done?"disabled":""}>${done?"✓":"Done"}</button>
-    `;
-    div.querySelector("button").onclick=()=>completeQuest(q.id);
-    qbox.appendChild(div);
+    questsBox.innerHTML+=`
+    <div class="quest">
+    <span>${q.text} (+${getExpGain()} EXP)</span>
+    <button ${done?"disabled":""} onclick="completeQuest('${q.id}')">${done?"✓":"Done"}</button>
+    </div>`;
   });
 }
 
-function checkDay(){
-  const today=new Date().toDateString();
-  if(game.lastDay!==today){
-    game.completed={};
-    game.lastDay=today;
-  }
+/* UI */
+const questsBox=document.getElementById("quests");
+function updateGameUI(){
+  expFill.style.width=(game.exp/game.expMax*100)+"%";
+  levelText.innerText=`Level ${game.level} • ${game.exp}/${game.expMax}`;
 }
 
-function devResetDay(){
-  game.completed={};
-  game.lastDay=new Date().toDateString();
-  renderQuests();
-  save();
-}
-
-function devResetGame(){
-  if(!confirm("Reset level game? (Stats & avatar aman)")) return;
-
-  game.level = 1;
-  game.exp = 0;
-  game.expMax = 100;
-  game.completed = {};
-  game.lastDay = new Date().toDateString();
-
-  updateGameUI();
-  renderQuests();
-  save();
-
-  alert("Level game berhasil di-reset!");
-}
-
-/* ---------- RANK ---------- */
-let lastRank = null;
-
-function updateRank(){
-  const avg =
-    Object.values(stats).reduce((a,b)=>a+b,0) /
-    Object.keys(stats).length;
-
-  let rank = "NOVICE";
-  let rankClass = "novice";
-
-  if(avg >= 3){
-    rank = "APPRENTICE";
-    rankClass = "apprentice";
-  }
-  if(avg >= 6){
-    rank = "WARRIOR";
-    rankClass = "warrior";
-  }
-  if(avg >= 9){
-    rank = "MASTER";
-    rankClass = "master";
-  }
-
-  const rankEl = document.getElementById("rankText");
-
-  // HANYA ANIMASI JIKA RANK BERUBAH
-  if(lastRank && lastRank !== rank){
-    rankEl.classList.add("rank-up");
-    setTimeout(()=>{
-      rankEl.classList.remove("rank-up");
-    },800);
-  }
-
-  rankEl.className = "rank " + rankClass;
-  rankEl.innerText = "RANK: " + rank;
-// === AURA AVATAR BY RANK ===
-const avatarEl = document.getElementById("avatar");
-avatarEl.classList.remove(
-  "aura-apprentice",
-  "aura-warrior",
-  "aura-master"
-);
-
-if(rank === "APPRENTICE"){
-  avatarEl.classList.add("aura-apprentice");
-}
-if(rank === "WARRIOR"){
-  avatarEl.classList.add("aura-warrior");
-}
-if(rank === "MASTER"){
-  avatarEl.classList.add("aura-master");
-}
-
-  lastRank = rank;
-}
-
-
+/* AVATAR */
 function updateAvatar(){
-  const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
-  const avatar = document.getElementById("avatar");
-if(avatarData){
-  avatar.innerHTML = `<img src="${avatarData}">`;
-  return;
-}
-
+  const el=avatar;
   if(avatarData){
-    const img = document.createElement("img");
-    img.src = avatarData;
-    avatar.appendChild(img);
+    el.innerHTML=`<img src="${avatarData}">`;
     return;
   }
-
-  let icon="🧍";
-  if(avg>=3) icon="🧙";
-  if(avg>=6) icon="🛡️";
-  if(avg>=9) icon="👑";
-
-  avatar.textContent = icon;
+  el.textContent="🧙";
 }
 
-/* ---------- TABS ---------- */
-document.getElementById("tabStats").onclick=()=>{
-  statsMode.style.display="block";
-  gameMode.style.display="none";
-  tabStats.classList.add("active");
-  tabGame.classList.remove("active");
+/* EVENTS */
+avatarUpload.onchange=e=>{
+  const r=new FileReader();
+  r.onload=()=>{avatarData=r.result;updateAvatar();save()};
+  r.readAsDataURL(e.target.files[0]);
 };
-
-document.getElementById("tabGame").onclick=()=>{
-  statsMode.style.display="none";
-  gameMode.style.display="block";
-  tabGame.classList.add("active");
-  tabStats.classList.remove("active");
-};
-
-document.getElementById("avatarUpload").onchange=e=>{
-  const file=e.target.files[0];
-  if(!file) return;
-
-  const reader=new FileReader();
-  reader.onload=()=>{
-    avatarData=reader.result;
-    updateAvatar();
-    save();
-  };
-  reader.readAsDataURL(file);
-};
-
-document.getElementById("resetAvatar").onclick = () => {
-  avatarData = null;
-  updateAvatar();
-  save();
-};
+resetAvatar.onclick=()=>{avatarData=null;updateAvatar();save()};
 
 /* INIT */
-Object.keys(statConfig).forEach(createStat);
-checkDay();
 renderQuests();
 updateAvatar();
-updateRank();
 updateGameUI();
-updateAICoach();
-save();
-document.getElementById("tabStats").click();
 </script>
-
 </body>
 </html>
