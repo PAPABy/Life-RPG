@@ -433,13 +433,6 @@ document.querySelectorAll(".mood-options button").forEach(btn=>{
   }
 });
 
-let currentMood = "neutral";
-
-// load mood
-if(saved){
-  currentMood = JSON.parse(saved).mood || "neutral";
-}
-
 function updateAICoach(){
   const msg = document.getElementById("aiMessage");
 
@@ -598,6 +591,13 @@ function completeQuest(id){
   game.exp = 0;
   game.expMax = Math.floor(game.expMax * 1.25);
   triggerLevelUpFX();
+}
+
+let currentMood = "neutral";
+
+// load mood
+if(saved){
+  currentMood = JSON.parse(saved).mood || "neutral";
 }
 
   updateRank();
