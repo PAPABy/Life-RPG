@@ -414,6 +414,13 @@ input[type=range] {
 </div>
 
 <script>
+// MOOD
+let currentMood = "neutral";
+if(saved){
+  const data = JSON.parse(saved);
+  currentMood = data.mood || "neutral";
+}
+  
 document.querySelectorAll(".mood-options button").forEach(btn=>{
   btn.onclick = ()=>{
     document
@@ -513,6 +520,16 @@ let game = {
 
 let avatarData = null;
 
+let saveTimer;
+function save(){
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(()=>{
+    localStorage.setItem(STORAGE,JSON.stringify({
+      stats, game, avatar: avatarData, mood: currentMood
+    }));
+  },300);
+}
+
 // LOAD
 const saved = localStorage.getItem(STORAGE);
 if(saved){
@@ -520,13 +537,6 @@ if(saved){
   stats = data.stats || stats;
   game = data.game || game;
   avatarData = data.avatar || null;
-}
-
-// MOOD
-let currentMood = "neutral";
-if(saved){
-  const data = JSON.parse(saved);
-  currentMood = data.mood || "neutral";
 }
 
 // SAVE
@@ -570,10 +580,10 @@ function updateStatUI(k){
 
 /* ---------- GAME ---------- */
 const quests = [
-  {id:"discipline",text:"Discipline Task (+25 EXP)"},
-  {id:"physical",text:"Physical Activity (+25 EXP)"},
-  {id:"mental",text:"Mental Care (+25 EXP)"},
-  {id:"social",text:"Social Interaction (+25 EXP)"}
+  {id:"discipline",text:"Discipline Task"},
+  {id:"physical",text:"Physical Activity"},
+  {id:"mental",text:"Mental Care"},
+  {id:"social",text:"Social Interaction"}
 ];
 
 function getExpGain(){
@@ -593,9 +603,9 @@ function completeQuest(id){
   let gain = getExpGain();
   game.exp += gain;
 
-  if(game.exp >= game.expMax){
+  iif(game.exp >= game.expMax){
+  game.exp -= game.expMax;
   game.level++;
-  game.exp = 0;
   game.expMax = Math.floor(game.expMax * 1.25);
   triggerLevelUpFX();
 }
@@ -715,8 +725,10 @@ if(rank === "MASTER"){
 function updateAvatar(){
   const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
   const avatar = document.getElementById("avatar");
-
-  avatar.innerHTML = "";
+if(avatarData){
+  avatar.innerHTML = `<img src="${avatarData}">`;
+  return;
+}
 
   if(avatarData){
     const img = document.createElement("img");
