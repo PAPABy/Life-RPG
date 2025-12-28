@@ -621,6 +621,37 @@ function renderQuests(){
   });
 }
 
+/* ================== DEV TOOLS ================== */
+function devResetDay(){
+  game.completed = {};
+  game.lastDay = new Date().toDateString();
+
+  renderQuests();
+  updateGameUI();
+  updateAICoach();
+  save();
+
+  alert("✅ Daily quest berhasil di-reset");
+}
+
+function devResetGame(){
+  if(!confirm("⚠️ Reset LEVEL & EXP?\nStats & Avatar tetap aman.")) return;
+
+  game.level = 1;
+  game.exp = 0;
+  game.expMax = 100;
+  game.completed = {};
+  game.lastDay = new Date().toDateString();
+
+  updateGameUI();
+  updateRank();
+  renderQuests();
+  updateAICoach();
+  save();
+
+  alert("🧪 Level game berhasil di-reset");
+}
+
 /* ================== RANK ================== */
 function updateRank(){
   const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
