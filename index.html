@@ -433,13 +433,6 @@ document.querySelectorAll(".mood-options button").forEach(btn=>{
   }
 });
 
-let currentMood = "neutral";
-
-// load mood
-if(saved){
-  currentMood = JSON.parse(saved).mood || "neutral";
-}
-
 function updateAICoach(){
   const msg = document.getElementById("aiMessage");
 
@@ -527,6 +520,14 @@ if(saved){
   stats = data.stats || stats;
   game = data.game || game;
   avatarData = data.avatar || null;
+}
+
+// ===== MOOD STATE =====
+let currentMood = "neutral";
+
+if(saved){
+  const data = JSON.parse(saved);
+  currentMood = data.mood || "neutral";
 }
 
 // SAVE
