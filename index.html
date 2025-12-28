@@ -286,6 +286,16 @@ input[type=range] {
   50%{ transform:scale(1.25); }
   100%{ transform:scale(.9); }
 }
+.dev-reset-btn{
+  width:100%;
+  margin-top:8px;
+  padding:8px;
+  background:#2a2f55;
+  color:#ffbaba;
+  border:1px dashed #ff6b6b;
+  border-radius:12px;
+  font-size:14px;
+}
 </style>
 </head>
 
@@ -485,6 +495,22 @@ function devResetDay(){
   game.lastDay=new Date().toDateString();
   renderQuests();
   save();
+}
+
+function devResetGame(){
+  if(!confirm("Reset level game? (Stats & avatar aman)")) return;
+
+  game.level = 1;
+  game.exp = 0;
+  game.expMax = 100;
+  game.completed = {};
+  game.lastDay = new Date().toDateString();
+
+  updateGameUI();
+  renderQuests();
+  save();
+
+  alert("Level game berhasil di-reset!");
 }
 
 /* ---------- RANK ---------- */
