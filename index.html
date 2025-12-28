@@ -414,10 +414,66 @@ input[type=range] {
 </div>
 
 <script>
+/* ================== CONSTANT ================== */
+const STORAGE = "life_rpg_full";
+
+/* ================== DATA DEFAULT ================== */
+const statConfig = {
+  discipline:{label:"Discipline",color:"#4facfe"},
+  physical:{label:"Physical",color:"#ff4d4d"},
+  financial:{label:"Financial",color:"#ffd700"},
+  mental:{label:"Mental",color:"#b983ff"},
+  social:{label:"Social",color:"#2ecc71"},
+  relationship:{label:"Relationship",color:"#ff6fae"}
+};
+
+let stats = {};
+Object.keys(statConfig).forEach(k => stats[k] = 5);
+
+let game = {
+  level:1,
+  exp:0,
+  expMax:100,
+  completed:{},
+  lastDay:new Date().toDateString()
+};
+
+let avatarData = null;
+let currentMood = "neutral";
+let lastRank = null;
+
+/* ================== LOAD STORAGE ================== */
+const saved = localStorage.getItem(STORAGE);
+if(saved){
+  const data = JSON.parse(saved);
+  stats = data.stats || stats;
+  game = data.game || game;
+  avatarData = data.avatar || null;
+  currentMood = data.mood || "neutral";
+}
+
+/* ================== DOM CACHE ================== */
+const statsMode = document.getElementById("statsMode");
+const gameMode  = document.getElementById("gameMode");
+const tabStats  = document.getElementById("tabStats");
+const tabGame   = document.getElementById("tabGame");
+const avatarEl  = document.getElementById("avatar");
+const rankText  = document.getElementById("rankText");
+const expFill   = document.getElementById("expFill");
+const levelText = document.getElementById("levelText");
+const aiMessage = document.getElementById("aiMessage");
+
+/* ================== SAVE ================== */
+function save(){
+  localStorage.setItem(STORAGE, JSON.stringify({
+    stats, game, avatar: avatarData, mood: currentMood
+  }));
+}
+
+/* ================== MOOD ================== */
 document.querySelectorAll(".mood-options button").forEach(btn=>{
   btn.onclick = ()=>{
-    document
-      .querySelectorAll(".mood-options button")
+    document.querySelectorAll(".mood-options button")
       .forEach(b=>b.classList.remove("active"));
 
     btn.classList.add("active");
@@ -427,16 +483,13 @@ document.querySelectorAll(".mood-options button").forEach(btn=>{
     save();
   };
 
-  // restore active
   if(btn.dataset.mood === currentMood){
     btn.classList.add("active");
   }
 });
 
+/* ================== AI COACH ================== */
 function updateAICoach(){
-  const msg = document.getElementById("aiMessage");
-
-  // stat terendah
   let lowestKey = null;
   let lowestValue = Infinity;
 
@@ -449,26 +502,24 @@ function updateAICoach(){
 
   if(!lowestKey) return;
 
-  // respon berbasis mood
-  if(currentMood === "great"){
-    text = `Energi kamu bagus hari ini. Manfaatkan untuk meningkatkan ${statName}.`;
-  }
-  else if(currentMood === "good"){
-    text = `Mood kamu stabil. Sedikit progres di ${statName} akan berdampak besar.`;
-  }
-  else if(currentMood === "neutral"){
-    text = `Hari biasa tidak apa-apa. Fokus ringan pada ${statName}.`;
-  }
-  else if(currentMood === "tired"){
-    text = `Kamu terlihat lelah. Jangan memaksa, rawat ${statName} dengan cara lembut.`;
-  }
-  else if(currentMood === "bad"){
-    text = `Hari berat ya. Prioritaskan dirimu dulu, terutama ${statName}. Kamu tidak sendiri.`;
-  }
+  const statName = statConfig[lowestKey].label;
+  let text = "";
 
-  msg.innerText = text;
+  if(currentMood === "great")
+    text = `Energi kamu bagus. Dorong ${statName} hari ini.`;
+  else if(currentMood === "good")
+    text = `Sedikit progres di ${statName} akan terasa besar.`;
+  else if(currentMood === "neutral")
+    text = `Hari biasa. Fokus ringan pada ${statName}.`;
+  else if(currentMood === "tired")
+    text = `Pelan-pelan ya. Rawat ${statName} tanpa memaksa.`;
+  else
+    text = `Hari berat. Jaga ${statName}. Kamu tidak sendirian.`;
+
+  aiMessage.innerText = text;
 }
 
+/* ================== LEVEL UP FX ================== */
 function triggerLevelUpFX(){
   const card = document.querySelector(".card");
   const fx = document.getElementById("levelUpFx");
@@ -482,57 +533,7 @@ function triggerLevelUpFX(){
   },1000);
 }
 
-const STORAGE = "life_rpg_full";
-
-const statConfig = {
-  discipline:{label:"Discipline",color:"#4facfe"},
-  physical:{label:"Physical",color:"#ff4d4d"},
-  financial:{label:"Financial",color:"#ffd700"},
-  mental:{label:"Mental",color:"#b983ff"},
-  social:{label:"Social",color:"#2ecc71"},
-  relationship:{label:"Relationship",color:"#ff6fae"}
-};
-
-function save(){
-  localStorage.setItem(STORAGE, JSON.stringify({
-    stats, game, avatar: avatarData, mood: currentMood
-  }));
-}
-
-let stats = {};
-Object.keys(statConfig).forEach(k=>stats[k]=5);
-
-let game = {
-  level:1,
-  exp:0,
-  expMax:100,
-  completed:{},
-  lastDay:new Date().toDateString()
-};
-
-let avatarData = null;
-
-// LOAD
-const saved = localStorage.getItem(STORAGE);
-if(saved){
-  const data = JSON.parse(saved);
-  stats = data.stats || stats;
-  game = data.game || game;
-  avatarData = data.avatar || null;
-}
-
-// MOOD
-let currentMood = "neutral";
-if(saved){
-  const data = JSON.parse(saved);
-  currentMood = data.mood || "neutral";
-}
-
-// SAVE
-
-/* ---------- STATS ---------- */
-const statsBox = document.getElementById("statsMode");
-
+/* ================== STATS ================== */
 function createStat(k){
   const s = statConfig[k];
   const div = document.createElement("div");
@@ -547,7 +548,7 @@ function createStat(k){
     </div>
     <input id="${k}Input" type="range" min="0" max="10" step="0.1">
   `;
-  statsBox.appendChild(div);
+  statsMode.appendChild(div);
 
   document.getElementById(k+"Input").oninput=e=>{
     stats[k]=parseFloat(e.target.value);
@@ -562,12 +563,12 @@ function createStat(k){
 }
 
 function updateStatUI(k){
-  document.getElementById(k+"Value").innerText=stats[k].toFixed(1);
-  document.getElementById(k+"Bar").style.width=(stats[k]*10)+"%";
-  document.getElementById(k+"Input").value=stats[k];
+  document.getElementById(k+"Value").innerText = stats[k].toFixed(1);
+  document.getElementById(k+"Bar").style.width = (stats[k]*10)+"%";
+  document.getElementById(k+"Input").value = stats[k];
 }
 
-/* ---------- GAME ---------- */
+/* ================== GAME ================== */
 const quests = [
   {id:"discipline",text:"Discipline Task"},
   {id:"physical",text:"Physical Activity"},
@@ -576,28 +577,26 @@ const quests = [
 ];
 
 function getExpGain(){
-  return game.level >= 8 ? 50 : 25;
+  return game.level >= 8 ? 37 : 25;
 }
 
 function updateGameUI(){
-  document.getElementById("expFill").style.width=(game.exp/game.expMax*100)+"%";
-  document.getElementById("levelText").innerText=
-    `Level ${game.level} • EXP ${game.exp} / ${game.expMax}`;
+  expFill.style.width = (game.exp/game.expMax*100)+"%";
+  levelText.innerText = `Level ${game.level} • EXP ${game.exp} / ${game.expMax}`;
 }
 
 function completeQuest(id){
   if(game.completed[id]) return;
 
-  game.completed[id] = true;
-  let gain = getExpGain();
-  game.exp += gain;
+  game.completed[id]=true;
+  game.exp += getExpGain();
 
   while(game.exp >= game.expMax){
-  game.exp -= game.expMax;
-  game.level++;
-  game.expMax = Math.floor(game.expMax * 1.25);
-  triggerLevelUpFX();
-}
+    game.exp -= game.expMax;
+    game.level++;
+    game.expMax = Math.floor(game.expMax*1.25);
+    triggerLevelUpFX();
+  }
 
   updateRank();
   renderQuests();
@@ -607,14 +606,14 @@ function completeQuest(id){
 }
 
 function renderQuests(){
-  const qbox=document.getElementById("quests");
+  const qbox = document.getElementById("quests");
   qbox.innerHTML="";
   quests.forEach(q=>{
-    const done=game.completed[q.id];
-    const div=document.createElement("div");
+    const done = game.completed[q.id];
+    const div = document.createElement("div");
     div.className="quest";
     div.innerHTML=`
-      <span>${q.text.split("(")[0]}(+${getExpGain()} EXP)</span>
+      <span>${q.text} (+${getExpGain()} EXP)</span>
       <button ${done?"disabled":""}>${done?"✓":"Done"}</button>
     `;
     div.querySelector("button").onclick=()=>completeQuest(q.id);
@@ -622,135 +621,48 @@ function renderQuests(){
   });
 }
 
-function checkDay(){
-  const today=new Date().toDateString();
-  if(game.lastDay!==today){
-    game.completed={};
-    game.lastDay=today;
-  }
-}
-
-function devResetDay(){
-  game.completed={};
-  game.lastDay=new Date().toDateString();
-  renderQuests();
-  save();
-}
-
-function devResetGame(){
-  if(!confirm("Reset level game? (Stats & avatar aman)")) return;
-
-  game.level = 1;
-  game.exp = 0;
-  game.expMax = 100;
-  game.completed = {};
-  game.lastDay = new Date().toDateString();
-
-  updateGameUI();
-  renderQuests();
-  save();
-
-  alert("Level game berhasil di-reset!");
-}
-
-/* ---------- RANK ---------- */
-let lastRank = null;
-
+/* ================== RANK ================== */
 function updateRank(){
-  const avg =
-    Object.values(stats).reduce((a,b)=>a+b,0) /
-    Object.keys(stats).length;
+  const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
 
-  let rank = "NOVICE";
-  let rankClass = "novice";
+  let rank="NOVICE", cls="novice";
+  if(avg>=3){rank="APPRENTICE";cls="apprentice";}
+  if(avg>=6){rank="WARRIOR";cls="warrior";}
+  if(avg>=9){rank="MASTER";cls="master";}
 
-  if(avg >= 3){
-    rank = "APPRENTICE";
-    rankClass = "apprentice";
-  }
-  if(avg >= 6){
-    rank = "WARRIOR";
-    rankClass = "warrior";
-  }
-  if(avg >= 9){
-    rank = "MASTER";
-    rankClass = "master";
+  if(lastRank && lastRank!==rank){
+    rankText.classList.add("rank-up");
+    setTimeout(()=>rankText.classList.remove("rank-up"),800);
   }
 
-  const rankEl = document.getElementById("rankText");
+  rankText.className = "rank "+cls;
+  rankText.innerText = "RANK: "+rank;
 
-  // HANYA ANIMASI JIKA RANK BERUBAH
-  if(lastRank && lastRank !== rank){
-    rankEl.classList.add("rank-up");
-    setTimeout(()=>{
-      rankEl.classList.remove("rank-up");
-    },800);
-  }
-
-  rankEl.className = "rank " + rankClass;
-  rankEl.innerText = "RANK: " + rank;
-// === AURA AVATAR BY RANK ===
-const avatarEl = document.getElementById("avatar");
-avatarEl.classList.remove(
-  "aura-apprentice",
-  "aura-warrior",
-  "aura-master"
-);
-
-if(rank === "APPRENTICE"){
-  avatarEl.classList.add("aura-apprentice");
-}
-if(rank === "WARRIOR"){
-  avatarEl.classList.add("aura-warrior");
-}
-if(rank === "MASTER"){
-  avatarEl.classList.add("aura-master");
-}
+  avatarEl.classList.remove("aura-apprentice","aura-warrior","aura-master");
+  if(rank==="APPRENTICE") avatarEl.classList.add("aura-apprentice");
+  if(rank==="WARRIOR") avatarEl.classList.add("aura-warrior");
+  if(rank==="MASTER") avatarEl.classList.add("aura-master");
 
   lastRank = rank;
 }
 
-
+/* ================== AVATAR ================== */
 function updateAvatar(){
-  const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
-  const avatar = document.getElementById("avatar");
-
-  avatar.innerHTML = "";
-
+  avatarEl.innerHTML="";
   if(avatarData){
-    const img = document.createElement("img");
-    img.src = avatarData;
-    avatar.appendChild(img);
+    const img=document.createElement("img");
+    img.src=avatarData;
+    avatarEl.appendChild(img);
     return;
   }
 
-  let icon="🧍";
-  if(avg>=3) icon="🧙";
-  if(avg>=6) icon="🛡️";
-  if(avg>=9) icon="👑";
-
-  avatar.textContent = icon;
+  const avg = Object.values(stats).reduce((a,b)=>a+b,0)/Object.keys(stats).length;
+  avatarEl.textContent = avg>=9?"👑":avg>=6?"🛡️":avg>=3?"🧙":"🧍";
 }
-
-/* ---------- TABS ---------- */
-document.getElementById("tabStats").onclick=()=>{
-  statsMode.style.display="block";
-  gameMode.style.display="none";
-  tabStats.classList.add("active");
-  tabGame.classList.remove("active");
-};
-
-document.getElementById("tabGame").onclick=()=>{
-  statsMode.style.display="none";
-  gameMode.style.display="block";
-  tabGame.classList.add("active");
-  tabStats.classList.remove("active");
-};
 
 document.getElementById("avatarUpload").onchange=e=>{
   const file=e.target.files[0];
   if(!file) return;
-
   const reader=new FileReader();
   reader.onload=()=>{
     avatarData=reader.result;
@@ -760,21 +672,35 @@ document.getElementById("avatarUpload").onchange=e=>{
   reader.readAsDataURL(file);
 };
 
-document.getElementById("resetAvatar").onclick = () => {
-  avatarData = null;
+document.getElementById("resetAvatar").onclick=()=>{
+  avatarData=null;
   updateAvatar();
   save();
 };
 
-/* INIT */
+/* ================== TABS ================== */
+tabStats.onclick=()=>{
+  statsMode.style.display="block";
+  gameMode.style.display="none";
+  tabStats.classList.add("active");
+  tabGame.classList.remove("active");
+};
+
+tabGame.onclick=()=>{
+  statsMode.style.display="none";
+  gameMode.style.display="block";
+  tabGame.classList.add("active");
+  tabStats.classList.remove("active");
+};
+
+/* ================== INIT ================== */
 Object.keys(statConfig).forEach(createStat);
-checkDay();
 renderQuests();
 updateAvatar();
 updateRank();
 updateGameUI();
 updateAICoach();
-document.getElementById("tabStats").click();
+tabStats.click();
 </script>
 
 </body>
