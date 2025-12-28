@@ -317,6 +317,41 @@ input[type=range] {
   line-height:1.4;
   color:#e0e6ff;
 }
+
+/* ===== MOOD INPUT ===== */
+.mood-box{
+  margin-top:20px;
+  padding:14px;
+  border-radius:18px;
+  background:#141a33;
+  border:1px solid #2a3058;
+}
+
+.mood-title{
+  font-size:14px;
+  margin-bottom:8px;
+  color:#bfc6ff;
+}
+
+.mood-options{
+  display:flex;
+  justify-content:space-between;
+}
+
+.mood-options button{
+  font-size:22px;
+  background:#1f2440;
+  border:none;
+  border-radius:12px;
+  padding:8px 10px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.mood-options button.active,
+.mood-options button:hover{
+  background:#00ffcc;
+}
 </style>
 </head>
 
@@ -343,6 +378,17 @@ input[type=range] {
 
   <!-- STATS MODE -->
   <div id="statsMode"></div>
+  <div class="mood-box">
+  <div class="mood-title">🌤️ Mood Hari Ini</div>
+  <div class="mood-options">
+    <button data-mood="great">😄</button>
+    <button data-mood="good">🙂</button>
+    <button data-mood="neutral">😐</button>
+    <button data-mood="tired">😫</button>
+    <button data-mood="bad">😔</button>
+  </div>
+</div>
+
   <div id="aiCoach" class="ai-coach">
   <div class="ai-title">🤖 AI Coach</div>
   <div id="aiMessage" class="ai-message">
@@ -368,33 +414,67 @@ input[type=range] {
 </div>
 
 <script>
+document.querySelectorAll(".mood-options button").forEach(btn=>{
+  btn.onclick = ()=>{
+    document
+      .querySelectorAll(".mood-options button")
+      .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+    currentMood = btn.dataset.mood;
+
+    updateAICoach();
+    save();
+  };
+
+  // restore active
+  if(btn.dataset.mood === currentMood){
+    btn.classList.add("active");
+  }
+});
+
+let currentMood = "neutral";
+
+// load mood
+if(saved){
+  currentMood = JSON.parse(saved).mood || "neutral";
+}
+
 function updateAICoach(){
   const msg = document.getElementById("aiMessage");
 
-  // cari stat terendah
-  let lowestStat = null;
+  // stat terendah
+  let lowestKey = null;
   let lowestValue = Infinity;
 
   for(const k in stats){
     if(stats[k] < lowestValue){
       lowestValue = stats[k];
-      lowestStat = statConfig[k].label;
+      lowestKey = k;
     }
   }
 
-  let advice = "";
+  const statName = statConfig[lowestKey].label;
+  let text = "";
 
-  if(game.level < 3){
-    advice = `Fokus dulu pada kebiasaan kecil. Tingkatkan ${lowestStat} secara konsisten.`;
+  // respon berbasis mood
+  if(currentMood === "great"){
+    text = `Energi kamu bagus hari ini. Manfaatkan untuk meningkatkan ${statName}.`;
   }
-  else if(game.level < 8){
-    advice = `Kamu berkembang. ${lowestStat} masih tertinggal, jadikan itu target utama minggu ini.`;
+  else if(currentMood === "good"){
+    text = `Mood kamu stabil. Sedikit progres di ${statName} akan berdampak besar.`;
   }
-  else{
-    advice = `Levelmu tinggi. Sekarang saatnya menyeimbangkan ${lowestStat} agar karaktermu matang.`;
+  else if(currentMood === "neutral"){
+    text = `Hari biasa tidak apa-apa. Fokus ringan pada ${statName}.`;
+  }
+  else if(currentMood === "tired"){
+    text = `Kamu terlihat lelah. Jangan memaksa, rawat ${statName} dengan cara lembut.`;
+  }
+  else if(currentMood === "bad"){
+    text = `Hari berat ya. Prioritaskan dirimu dulu, terutama ${statName}. Kamu tidak sendiri.`;
   }
 
-  msg.innerText = advice;
+  msg.innerText = text;
 }
 
 function triggerLevelUpFX(){
@@ -421,9 +501,9 @@ const statConfig = {
   relationship:{label:"Relationship",color:"#ff6fae"}
 };
 
-function save(){
+ffunction save(){
   localStorage.setItem(STORAGE,JSON.stringify({
-    stats,game,avatar:avatarData
+    stats, game, avatar: avatarData, mood: currentMood
   }));
 }
 
