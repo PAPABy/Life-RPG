@@ -236,6 +236,56 @@ input[type=range] {
   color:#f1c40f;
   text-shadow:0 0 10px rgba(241,196,15,.8);
 }
+
+/* ===== AVATAR AURA BY RANK ===== */
+.avatar{
+  position:relative;
+  z-index:2;
+}
+
+/* AURA BASE */
+.avatar::after{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+  opacity:0;
+  z-index:-1;
+  filter:blur(12px);
+  transition:opacity .3s ease;
+}
+
+/* APPRENTICE */
+.avatar.aura-apprentice::after{
+  background:rgba(46,204,113,.8);
+  opacity:.8;
+}
+
+/* WARRIOR */
+.avatar.aura-warrior::after{
+  background:rgba(52,152,219,.9);
+  opacity:.9;
+  animation:auraPulse 2s infinite;
+}
+
+/* MASTER */
+.avatar.aura-master::after{
+  background:rgba(241,196,15,1);
+  opacity:1;
+  animation:auraPulseStrong 1.6s infinite;
+}
+
+@keyframes auraPulse{
+  0%{ transform:scale(.9); }
+  50%{ transform:scale(1.1); }
+  100%{ transform:scale(.9); }
+}
+
+@keyframes auraPulseStrong{
+  0%{ transform:scale(.9); }
+  50%{ transform:scale(1.25); }
+  100%{ transform:scale(.9); }
+}
 </style>
 </head>
 
@@ -473,6 +523,23 @@ function updateRank(){
 
   rankEl.className = "rank " + rankClass;
   rankEl.innerText = "RANK: " + rank;
+// === AURA AVATAR BY RANK ===
+const avatarEl = document.getElementById("avatar");
+avatarEl.classList.remove(
+  "aura-apprentice",
+  "aura-warrior",
+  "aura-master"
+);
+
+if(rank === "APPRENTICE"){
+  avatarEl.classList.add("aura-apprentice");
+}
+if(rank === "WARRIOR"){
+  avatarEl.classList.add("aura-warrior");
+}
+if(rank === "MASTER"){
+  avatarEl.classList.add("aura-master");
+}
 
   lastRank = rank;
 }
