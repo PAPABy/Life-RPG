@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
 <meta charset="UTF-8">
 <title>Life RPG</title>
@@ -30,99 +30,56 @@ h1{text-align:center}
   background:linear-gradient(135deg,#00ffcc,#0066ff);
   display:flex;align-items:center;justify-content:center;
   font-size:40px;
-  position:relative;
 }
 .avatar img{
   width:100%;height:100%;
   border-radius:50%;object-fit:cover;
 }
 
-/* AURA */
-.avatar::after{
-  content:"";
-  position:absolute;
-  inset:-8px;
-  border-radius:50%;
-  filter:blur(12px);
-  opacity:0;
-  z-index:-1;
-}
-.avatar.aura-apprentice::after{background:#2ecc71;opacity:.7}
-.avatar.aura-warrior::after{background:#3498db;opacity:.9;animation:pulse 2s infinite}
-.avatar.aura-master::after{background:#f1c40f;opacity:1;animation:pulseStrong 1.6s infinite}
-
-@keyframes pulse{0%{transform:scale(.9)}50%{transform:scale(1.1)}100%{transform:scale(.9)}}
-@keyframes pulseStrong{0%{transform:scale(.9)}50%{transform:scale(1.25)}100%{transform:scale(.9)}}
-
 /* BUTTONS */
-.uploadBtn,.reset-avatar-btn,.dev-reset-btn{
+.uploadBtn,.reset-avatar-btn{
   width:100%;margin-top:8px;padding:8px;
   border-radius:12px;font-size:14px;
 }
 .uploadBtn{background:#1f2440;text-align:center}
 .reset-avatar-btn{
-  background:transparent;border:1px solid #2a3058;color:#bfc6ff;
-}
-.reset-avatar-btn:hover{background:#1a1f3c;color:#00ffcc}
-.dev-reset-btn{
-  background:#2a2f55;border:1px dashed #ff6b6b;color:#ffbaba;
+  background:#141a33;border:1px solid #2a3058;color:#bfc6ff;
 }
 
 /* TABS */
 .tabs{display:flex;gap:10px;margin:10px 0 20px}
 .tabs button{
   flex:1;background:#1f2440;border:none;color:white;
-  padding:8px;border-radius:10px;
+  padding:10px;border-radius:12px;
 }
 .tabs button.active{background:#00ffcc;color:black}
 
-/* RANK */
-.rank{text-align:center;margin-bottom:10px;color:#00ffcc}
-.rank-up{animation:rankPop .8s}
-@keyframes rankPop{0%{transform:scale(.8);opacity:0}40%{transform:scale(1.3);opacity:1}100%{transform:scale(1)}}
-
-/* EXP */
-.exp-bar{height:14px;background:#1f2440;border-radius:10px;overflow:hidden}
-.exp-fill{height:100%;background:linear-gradient(90deg,#ffd700,#ff9f00);transition:.3s}
-.level{text-align:center;font-size:14px;margin:6px 0 20px}
-
-/* QUEST */
-.quest{
-  background:#1a1f3c;padding:12px;border-radius:14px;
-  margin-bottom:10px;display:flex;justify-content:space-between;
-}
-
-/* LEVEL UP FX */
-.level-up-fx{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;
-  font-size:32px;font-weight:bold;
-  color:#ffd700;opacity:0;pointer-events:none;
-}
-.level-up-fx.show{animation:levelText 1s}
-@keyframes levelText{
-  0%{opacity:0;transform:scale(.6)}
-  30%{opacity:1;transform:scale(1.2)}
-  100%{opacity:0}
-}
-
-/* AI & MOOD */
-.ai-coach,.mood-box{
+/* MOOD */
+.mood-box{
   margin-top:20px;padding:14px;border-radius:18px;
   background:#141a33;border:1px solid #2a3058;
 }
-.mood-options{display:flex;justify-content:space-between}
+.mood-options{
+  display:flex;justify-content:space-between;margin-top:10px;
+}
 .mood-options button{
   font-size:22px;background:#1f2440;border:none;
-  border-radius:12px;padding:8px;
+  border-radius:12px;padding:10px;
 }
-.mood-options button.active{background:#00ffcc}
+.mood-options button.active{background:#00ffcc;color:black}
+
+/* GAME */
+.exp-bar{height:14px;background:#1f2440;border-radius:10px;overflow:hidden}
+.exp-fill{height:100%;background:#ffd700;width:0%;transition:.3s}
+.quest{
+  background:#1a1f3c;padding:12px;border-radius:14px;
+  margin-top:10px;display:flex;justify-content:space-between;
+}
 </style>
 </head>
 
 <body>
 <div class="card">
-<div id="levelUpFx" class="level-up-fx">LEVEL UP!</div>
 
 <div class="avatar" id="avatar">🧙</div>
 
@@ -134,139 +91,153 @@ Ganti Avatar
 <button id="resetAvatar" class="reset-avatar-btn">♻️ First Profile</button>
 
 <h1>Life RPG</h1>
-<div id="rankText" class="rank">RANK: NOVICE</div>
+<div style="text-align:center;color:#00ffcc">RANK: NOVICE</div>
 
 <div class="tabs">
 <button id="tabStats" class="active">Stats</button>
 <button id="tabGame">Game</button>
 </div>
 
-<div id="statsMode"></div>
+<div id="statsMode">
+  <div class="mood-box">
+    <strong>🌤️ Mood Hari Ini</strong>
+    <div class="mood-options">
+      <button data-mood="great">😄</button>
+      <button data-mood="good">🙂</button>
+      <button data-mood="neutral">😐</button>
+      <button data-mood="tired">😫</button>
+      <button data-mood="bad">😔</button>
+    </div>
+  </div>
 
-<div class="mood-box">
-<div>🌤️ Mood Hari Ini</div>
-<div class="mood-options">
-<button data-mood="great">😄</button>
-<button data-mood="good">🙂</button>
-<button data-mood="neutral">😐</button>
-<button data-mood="tired">😫</button>
-<button data-mood="bad">😔</button>
-</div>
-</div>
-
-<div class="ai-coach">
-<div id="aiMessage">Mulai bangun karaktermu hari ini.</div>
+  <div class="mood-box" id="aiMessage">
+    Mulai bangun karaktermu hari ini.
+  </div>
 </div>
 
 <div id="gameMode" style="display:none">
-<div class="exp-bar"><div id="expFill" class="exp-fill"></div></div>
-<div id="levelText" class="level"></div>
-<div id="quests"></div>
-
-<button onclick="devResetDay()">🔄 Dev: Reset Day</button>
-<button onclick="devResetGame()" class="dev-reset-btn">🧪 Dev: Reset Level Game</button>
+  <div class="exp-bar"><div id="expFill" class="exp-fill"></div></div>
+  <div id="levelText" style="margin:8px 0"></div>
+  <div id="quests"></div>
 </div>
+
 </div>
 
 <script>
-/* ===== CORE STATE ===== */
-const STORAGE="life_rpg_full";
-let currentMood="neutral";
+const savedMood = localStorage.getItem("lifeRPG_mood");
+if(savedMood) currentMood = savedMood;
+
+/* ===== STATE ===== */
 let avatarData=null;
-let saveTimer;
+let currentMood="neutral";
+let game={level:1,exp:0,expMax:100,completed:{}};
 
-/* SAVE (THROTTLED) */
-function save(){
-  clearTimeout(saveTimer);
-  saveTimer=setTimeout(()=>{
-    localStorage.setItem(STORAGE,JSON.stringify({stats,game,avatar:avatarData,mood:currentMood}));
-  },300);
-}
+const avatar=document.getElementById("avatar");
+const expFill=document.getElementById("expFill");
+const levelText=document.getElementById("levelText");
+const questsBox=document.getElementById("quests");
 
-/* LOAD */
-const saved=localStorage.getItem(STORAGE);
-let stats={discipline:5,physical:5,financial:5,mental:5,social:5,relationship:5};
-let game={level:1,exp:0,expMax:100,completed:{},lastDay:new Date().toDateString()};
+const aiCoachMessages = {
+  great: [
+    "Energi kamu tinggi. Manfaatkan hari ini untuk naik level.",
+    "Hari bagus untuk menyelesaikan quest sulit."
+  ],
+  good: [
+    "Konsistensi lebih penting dari kecepatan.",
+    "Sedikit progres hari ini lebih baik daripada nol."
+  ],
+  neutral: [
+    "Mulai dari satu tugas kecil.",
+    "Bangun momentum, jangan tunggu mood sempurna."
+  ],
+  tired: [
+    "Kurangi beban. Satu quest sudah cukup.",
+    "Istirahat juga bagian dari progres."
+  ],
+  bad: [
+    "Pelan tidak apa-apa. Yang penting tidak berhenti.",
+    "Rawat diri dulu sebelum mengejar target."
+  ]
+};
 
-if(saved){
-  const d=JSON.parse(saved);
-  stats=d.stats||stats;
-  game=d.game||game;
-  avatarData=d.avatar||null;
-  currentMood=d.mood||"neutral";
-}
+/* ===== TAB LOGIC ===== */
+tabStats.onclick=()=>{
+  tabStats.classList.add("active");
+  tabGame.classList.remove("active");
+  statsMode.style.display="block";
+  gameMode.style.display="none";
+};
 
-/* EXP */
-function getExpGain(){return game.level>=8?50:25}
+tabGame.onclick=()=>{
+  tabGame.classList.add("active");
+  tabStats.classList.remove("active");
+  statsMode.style.display="none";
+  gameMode.style.display="block";
+  renderGame();
+};
 
-/* LEVEL UP FX */
-function triggerLevelUpFX(){
-  document.getElementById("levelUpFx").classList.add("show");
-  setTimeout(()=>levelUpFx.classList.remove("show"),1000);
-}
+/* ===== MOOD ===== */
+document.querySelectorAll(".mood-options button").forEach(btn=>{
+  btn.onclick=()=>{
+  document.querySelectorAll(".mood-options button")
+    .forEach(b=>b.classList.remove("active"));
+  btn.classList.add("active");
+localStorage.setItem("lifeRPG_mood", currentMood);
 
-/* QUEST */
-const quests=[
-{id:"discipline",text:"Discipline Task"},
-{id:"physical",text:"Physical Activity"},
-{id:"mental",text:"Mental Care"},
-{id:"social",text:"Social Interaction"}
-];
+  currentMood = btn.dataset.mood;
+  updateAICoach();
+};
 
-function completeQuest(id){
-  if(game.completed[id])return;
-  game.completed[id]=true;
-  game.exp+=getExpGain();
-  if(game.exp>=game.expMax){
-    game.exp-=game.expMax;
-    game.level++;
-    game.expMax=Math.floor(game.expMax*1.25);
-    triggerLevelUpFX();
-  }
-  updateGameUI();renderQuests();save();
-}
+/* ===== AVATAR ===== */
+avatarUpload.onchange=e=>{
+  const r=new FileReader();
+  r.onload=()=>{avatar.innerHTML=`<img src="${r.result}">`;};
+  r.readAsDataURL(e.target.files[0]);
+};
+resetAvatar.onclick=()=>{avatar.innerText="🧙";};
 
-function renderQuests(){
+/* ===== GAME ===== */
+function renderGame(){
+  expFill.style.width=(game.exp/game.expMax*100)+"%";
+  levelText.innerText=`Level ${game.level} • ${game.exp}/${game.expMax}`;
   questsBox.innerHTML="";
-  quests.forEach(q=>{
-    const done=game.completed[q.id];
+  ["Discipline","Physical","Mental"].forEach(q=>{
     questsBox.innerHTML+=`
     <div class="quest">
-    <span>${q.text} (+${getExpGain()} EXP)</span>
-    <button ${done?"disabled":""} onclick="completeQuest('${q.id}')">${done?"✓":"Done"}</button>
+      <span>${q}</span>
+      <button onclick="gainExp()">Done</button>
     </div>`;
   });
 }
 
-/* UI */
-const questsBox=document.getElementById("quests");
-function updateGameUI(){
-  expFill.style.width=(game.exp/game.expMax*100)+"%";
-  levelText.innerText=`Level ${game.level} • ${game.exp}/${game.expMax}`;
-}
+function updateAICoach() {
+  const box = document.getElementById("aiMessage");
+  let msgPool = aiCoachMessages[currentMood] || aiCoachMessages.neutral;
+  let msg = msgPool[Math.floor(Math.random() * msgPool.length)];
 
-/* AVATAR */
-function updateAvatar(){
-  const el=avatar;
-  if(avatarData){
-    el.innerHTML=`<img src="${avatarData}">`;
-    return;
+  // tambahan pintar berbasis game state
+  if (game.exp / game.expMax > 0.8) {
+    msg += " Kamu hampir naik level 🔥";
   }
-  el.textContent="🧙";
+
+  if (game.level >= 5) {
+    msg += " Fokuskan pada kualitas, bukan kuantitas.";
+  }
+
+  box.innerText = msg;
+}
+function gainExp(){
+  game.exp += 25;
+
+  if(game.exp >= game.expMax){
+    game.exp = 0;
+    game.level++;
+  }
+
+  renderGame();
+  updateAICoach();
 }
 
-/* EVENTS */
-avatarUpload.onchange=e=>{
-  const r=new FileReader();
-  r.onload=()=>{avatarData=r.result;updateAvatar();save()};
-  r.readAsDataURL(e.target.files[0]);
-};
-resetAvatar.onclick=()=>{avatarData=null;updateAvatar();save()};
-
-/* INIT */
-renderQuests();
-updateAvatar();
-updateGameUI();
 </script>
 </body>
 </html>
