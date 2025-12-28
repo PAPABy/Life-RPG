@@ -593,13 +593,6 @@ function completeQuest(id){
   triggerLevelUpFX();
 }
 
-let currentMood = "neutral";
-
-// load mood
-if(saved){
-  currentMood = JSON.parse(saved).mood || "neutral";
-}
-
   updateRank();
   renderQuests();
   updateGameUI();
