@@ -441,6 +441,7 @@ let game = {
 let avatarData = null;
 let currentMood = "neutral";
 let lastRank = null;
+let hardcoreMode = true; // ON / OFF
 
 /* ================== LOAD STORAGE ================== */
 const saved = localStorage.getItem(STORAGE);
@@ -451,6 +452,7 @@ if(saved){
   avatarData = data.avatar || null;
   currentMood = data.mood || "neutral";
 }
+  hardcoreMode = data.hardcore ?? true;
 
 /* ================== DOM CACHE ================== */
 const statsMode = document.getElementById("statsMode");
@@ -469,6 +471,7 @@ function save(){
     stats, game, avatar: avatarData, mood: currentMood
   }));
 }
+  hardcore: hardcoreMode
 
 /* ================== MOOD ================== */
 document.querySelectorAll(".mood-options button").forEach(btn=>{
@@ -619,6 +622,54 @@ function renderQuests(){
     div.querySelector("button").onclick=()=>completeQuest(q.id);
     qbox.appendChild(div);
   });
+}
+/* ==================Check Day==================== */
+function checkDay(){
+  const today = new Date().toDateString();
+
+  if(game.lastDay !== today){
+    hardcorePenalty(); // 👈 PENALTI DULU
+
+    game.completed = {};
+    game.lastDay = today;
+  }
+}
+
+function hardcorePenalty(){
+  if(!hardcoreMode) return;
+
+  const completedCount = Object.keys(game.completed).length;
+
+  // Jika TIDAK ADA quest diselesaikan kemarin
+  if(completedCount === 0){
+    // 1️⃣ Kurangi EXP
+    game.exp = Math.max(0, game.exp - 30);
+
+    // 2️⃣ Turunkan stat TERENDAH
+    let lowestKey = null;
+    let lowestValue = Infinity;
+
+    for(const k in stats){
+      if(stats[k] < lowestValue){
+        lowestValue = stats[k];
+        lowestKey = k;
+      }
+    }
+
+    if(lowestKey){
+      stats[lowestKey] = Math.max(0, stats[lowestKey] - 0.3);
+    }
+
+    // 3️⃣ Feedback visual
+    alert("⚠️ Hardcore Mode:\nKamu melewatkan hari tanpa progres.\nEXP & stat terendah berkurang.");
+
+    updateStatUI(lowestKey);
+    updateGameUI();
+    updateRank();
+    updateAvatar();
+    updateAICoach();
+    save();
+  }
 }
 
 /* ================== DEV TOOLS ================== */
