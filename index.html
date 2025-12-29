@@ -505,16 +505,14 @@ function save(){
 }
 
 /*================ Check Day ================ */
-function applyHardcorePenalty(){
-  if(!isHardcore) return;
+function hardcorePenalty(){
+  if(!hardcoreMode) return;
 
-  game.exp = Math.max(0, game.exp - 30);
+  const completedCount = Object.keys(game.completed).length;
 
-  if(game.exp === 0 && game.level > 1){
-    game.level--;
-    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
-  }
-}
+  if(completedCount === 0){
+    game.exp = Math.max(0, game.exp - 30);
+
     let lowestKey = null;
     let lowestValue = Infinity;
 
