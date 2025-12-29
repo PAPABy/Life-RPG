@@ -505,14 +505,16 @@ function save(){
 }
 
 /*================ Check Day ================ */
-function hardcorePenalty(){
-  if(!hardcoreMode) return;
+function applyHardcorePenalty(){
+  if(!isHardcore) return;
 
-  const completedCount = Object.keys(game.completed).length;
+  game.exp = Math.max(0, game.exp - 30);
 
-  if(completedCount === 0){
-    game.exp = Math.max(0, game.exp - 30);
-
+  if(game.exp === 0 && game.level > 1){
+    game.level--;
+    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
+  }
+}
     let lowestKey = null;
     let lowestValue = Infinity;
 
@@ -535,17 +537,6 @@ function hardcorePenalty(){
     updateAvatar();
     updateAICoach();
     save();
-  }
-}
-
-function applyHardcorePenalty(){
-  if(!isHardcore) return;
-
-  game.exp = Math.max(0, game.exp - 30);
-
-  if(game.exp === 0 && game.level > 1){
-    game.level--;
-    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
   }
 }
 
