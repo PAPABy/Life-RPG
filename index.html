@@ -505,6 +505,17 @@ function save(){
 }
 
 /*================ Check Day ================ */
+function applyHardcorePenalty(){
+  if(!isHardcore) return;
+
+  game.exp = Math.max(0, game.exp - 30);
+
+  if(game.exp === 0 && game.level > 1){
+    game.level--;
+    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
+  }
+}
+
 function hardcorePenalty(){
   if(!hardcoreMode) return;
 
