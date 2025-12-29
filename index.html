@@ -439,6 +439,7 @@ let game = {
 };
 
 let avatarData = null;
+let hardcoreMode = true; // MODE HARDCORE AKTIF
 let currentMood = "neutral";
 let lastRank = null;
 
@@ -450,6 +451,7 @@ if(saved){
   game = data.game || game;
   avatarData = data.avatar || null;
   currentMood = data.mood || "neutral";
+  hardcoreMode = data.hardcore ?? true;
 }
 
 /* ================== DOM CACHE ================== */
@@ -466,8 +468,61 @@ const aiMessage = document.getElementById("aiMessage");
 /* ================== SAVE ================== */
 function save(){
   localStorage.setItem(STORAGE, JSON.stringify({
-    stats, game, avatar: avatarData, mood: currentMood
+    stats,
+game,
+avatar: avatarData,
+mood: currentMood,
+hardcore: hardcoreMode
   }));
+}
+
+/*================ Check Day ================ */
+function hardcorePenalty(){
+  if(!hardcoreMode) return;
+
+  const completedCount = Object.keys(game.completed).length;
+
+  if(completedCount === 0){
+    game.exp = Math.max(0, game.exp - 30);
+
+    let lowestKey = null;
+    let lowestValue = Infinity;
+
+    for(const k in stats){
+      if(stats[k] < lowestValue){
+        lowestValue = stats[k];
+        lowestKey = k;
+      }
+    }
+
+    if(lowestKey){
+      stats[lowestKey] = Math.max(0, stats[lowestKey] - 0.3);
+    }
+
+    alert("⚠️ Hardcore Mode:\nKamu melewatkan hari tanpa progres.");
+
+    updateStatUI(lowestKey);
+    updateGameUI();
+    updateRank();
+    updateAvatar();
+    updateAICoach();
+    save();
+  }
+}
+
+function checkDay(){
+  const today = new Date().toDateString();
+
+  if(game.lastDay !== today){
+    // jika hardcore aktif, beri penalti
+    if(typeof hardcorePenalty === "function"){
+      hardcorePenalty();
+    }
+
+    game.completed = {};
+    game.lastDay = today;
+    save();
+  }
 }
 
 /* ================== MOOD ================== */
@@ -731,6 +786,7 @@ updateAvatar();
 updateRank();
 updateGameUI();
 updateAICoach();
+checkDay();
 tabStats.click();
 </script>
 
