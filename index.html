@@ -452,7 +452,6 @@ let game = {
 };
 
 let avatarData = null;
-let hardcoreMode = true;
 let isHardcore = false;
 let devSimulatedDate = null; // hanya untuk dev
 let currentMood = "neutral";
@@ -472,7 +471,7 @@ hardcoreBtn.onclick = ()=>{
 
 /* ================== LOAD STORAGE ================== */
 const saved = localStorage.getItem(STORAGE);
-iif(saved){
+if(saved){
   const data = JSON.parse(saved);
   stats = data.stats || stats;
   game = data.game || game;
@@ -722,7 +721,7 @@ function devResetGame(){
   alert("🧪 Level game berhasil di-reset");
 }
 
-ffunction devNextDay(){
+function devNextDay(){
   const base = devSimulatedDate
     ? new Date(devSimulatedDate)
     : new Date(game.lastDay);
