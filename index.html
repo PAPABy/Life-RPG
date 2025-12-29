@@ -441,7 +441,6 @@ let game = {
 let avatarData = null;
 let currentMood = "neutral";
 let lastRank = null;
-let hardcoreMode = true; // ON / OFF
 
 /* ================== LOAD STORAGE ================== */
 const saved = localStorage.getItem(STORAGE);
@@ -452,7 +451,6 @@ if(saved){
   avatarData = data.avatar || null;
   currentMood = data.mood || "neutral";
 }
-  hardcoreMode = data.hardcore ?? true;
 
 /* ================== DOM CACHE ================== */
 const statsMode = document.getElementById("statsMode");
@@ -471,7 +469,6 @@ function save(){
     stats, game, avatar: avatarData, mood: currentMood
   }));
 }
-  hardcore: hardcoreMode
 
 /* ================== MOOD ================== */
 document.querySelectorAll(".mood-options button").forEach(btn=>{
