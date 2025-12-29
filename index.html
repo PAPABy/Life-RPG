@@ -620,17 +620,6 @@ function renderQuests(){
     qbox.appendChild(div);
   });
 }
-/* ==================Check Day==================== */
-function checkDay(){
-  const today = new Date().toDateString();
-
-  if(game.lastDay !== today){
-    hardcorePenalty(); // 👈 PENALTI DULU
-
-    game.completed = {};
-    game.lastDay = today;
-  }
-}
 
 /* ================== DEV TOOLS ================== */
 function devResetDay(){
