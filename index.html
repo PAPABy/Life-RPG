@@ -506,16 +506,14 @@ function save(){
 
 /*================ Check Day ================ */
 function applyHardcorePenalty(){
-  if(!isHardcore) return;
-
-  game.exp = Math.max(0, game.exp - 30);
-
-  if(game.exp === 0 && game.level > 1){
-    game.level--;
-    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
+  if(!isHardcore)return;
+   game.exp=Math.max(0,game.exp-30);
+  if(game.exp===0 && game.level>1){
+   game.level--;
+game.expMax=Math.max(100,Math.floor(game.expMax/1.25));
   }
 }
-
+  
 function checkDay(){
   const today = new Date().toDateString();
 
@@ -539,20 +537,6 @@ function checkDay(){
     renderQuests();
     save();
   }
-}
-
-function checkDay(){
-const today=new Date().toDateString();
-if(game.lastDay!==today){
-if(isHardcore && Object.keys(game.completed).length<quests.length){
-applyHardcorePenalty();
-}
-game.completed={};
-game.lastDay=today;
-renderQuests();
-updateGameUI();
-save();
-}
 }
 
 /* ================== MOOD ================== */
