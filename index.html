@@ -428,6 +428,7 @@ input[type=range] {
 <script>
 /* ================== CONSTANT ================== */
 const STORAGE = "life_rpg_full";
+const hardcoreBtn = document.getElementById("hardcoreToggle");
 
 /* ================== DATA DEFAULT ================== */
 const statConfig = {
@@ -456,8 +457,6 @@ let isHardcore = false;
 let devSimulatedDate = null; // hanya untuk dev
 let currentMood = "neutral";
 let lastRank = null;
-
-const hardcoreBtn = document.getElementById("hardcoreToggle");
 
 function updateHardcoreUI(){
   hardcoreBtn.innerText = isHardcore ? "ON" : "OFF";
