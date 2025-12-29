@@ -506,14 +506,49 @@ function save(){
 
 /*================ Check Day ================ */
 function applyHardcorePenalty(){
-  if(!isHardcore)return;
-   game.exp=Math.max(0,game.exp-30);
-  if(game.exp===0 && game.level>1){
-   game.level--;
-game.expMax=Math.max(100,Math.floor(game.expMax/1.25));
+  if(!isHardcore) return;
+
+  game.exp = Math.max(0, game.exp - 30);
+
+  if(game.exp === 0 && game.level > 1){
+    game.level--;
+    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
   }
 }
-  
+
+function hardcorePenalty(){
+  if(!hardcoreMode) return;
+
+  const completedCount = Object.keys(game.completed).length;
+
+  if(completedCount === 0){
+    game.exp = Math.max(0, game.exp - 30);
+
+    let lowestKey = null;
+    let lowestValue = Infinity;
+
+    for(const k in stats){
+      if(stats[k] < lowestValue){
+        lowestValue = stats[k];
+        lowestKey = k;
+      }
+    }
+
+    if(lowestKey){
+      stats[lowestKey] = Math.max(0, stats[lowestKey] - 0.3);
+    }
+
+    alert("⚠️ Hardcore Mode:\nKamu melewatkan hari tanpa progres.");
+
+    updateStatUI(lowestKey);
+    updateGameUI();
+    updateRank();
+    updateAvatar();
+    updateAICoach();
+    save();
+  }
+}
+
 function checkDay(){
   const today = new Date().toDateString();
 
