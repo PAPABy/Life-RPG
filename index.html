@@ -635,43 +635,6 @@ function checkDay(){
   }
 }
 
-function hardcorePenalty(){
-  if(!hardcoreMode) return;
-
-  const completedCount = Object.keys(game.completed).length;
-
-  // Jika TIDAK ADA quest diselesaikan kemarin
-  if(completedCount === 0){
-    // 1️⃣ Kurangi EXP
-    game.exp = Math.max(0, game.exp - 30);
-
-    // 2️⃣ Turunkan stat TERENDAH
-    let lowestKey = null;
-    let lowestValue = Infinity;
-
-    for(const k in stats){
-      if(stats[k] < lowestValue){
-        lowestValue = stats[k];
-        lowestKey = k;
-      }
-    }
-
-    if(lowestKey){
-      stats[lowestKey] = Math.max(0, stats[lowestKey] - 0.3);
-    }
-
-    // 3️⃣ Feedback visual
-    alert("⚠️ Hardcore Mode:\nKamu melewatkan hari tanpa progres.\nEXP & stat terendah berkurang.");
-
-    updateStatUI(lowestKey);
-    updateGameUI();
-    updateRank();
-    updateAvatar();
-    updateAICoach();
-    save();
-  }
-}
-
 /* ================== DEV TOOLS ================== */
 function devResetDay(){
   game.completed = {};
