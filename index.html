@@ -747,9 +747,19 @@ function devResetGame(){
   alert("🧪 Level game berhasil di-reset");
 }
 
-function devNextDay(){
-  game.lastDay = new Date(Date.now() - 86400000).toDateString();
+ffunction devNextDay(){
+  const base = devSimulatedDate
+    ? new Date(devSimulatedDate)
+    : new Date(game.lastDay);
+
+  base.setDate(base.getDate() + 1);
+  devSimulatedDate = base.toDateString();
+
+  alert("🧪 Dev: Hari diganti ke\n" + devSimulatedDate);
+
   checkDay();
+  renderQuests();
+  updateGameUI();
 }
 
 function devResetSimulatedDay(){
