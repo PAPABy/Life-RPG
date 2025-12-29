@@ -386,6 +386,12 @@ input[type=range] {
     <button data-mood="neutral">😐</button>
     <button data-mood="tired">😫</button>
     <button data-mood="bad">😔</button>
+  <div class="mood-box">
+  <div class="mood-title">🔥 Mode Hardcore</div>
+  <button id="hardcoreToggle" class="reset-avatar-btn">
+    OFF
+  </button>
+</div>
   </div>
 </div>
 
@@ -446,19 +452,34 @@ let game = {
 
 let avatarData = null;
 let hardcoreMode = true;
+let isHardcore = false;
 let devSimulatedDate = null; // hanya untuk dev
 let currentMood = "neutral";
 let lastRank = null;
 
+const hardcoreBtn = document.getElementById("hardcoreToggle");
+
+function updateHardcoreUI(){
+  hardcoreBtn.innerText = isHardcore ? "ON" : "OFF";
+  hardcoreBtn.style.color = isHardcore ? "#ff6b6b" : "#bfc6ff";
+  hardcoreBtn.style.borderColor = isHardcore ? "#ff6b6b" : "#2a3058";
+}
+
+hardcoreBtn.onclick = ()=>{
+  isHardcore = !isHardcore;
+  updateHardcoreUI();
+  save();
+};
+
 /* ================== LOAD STORAGE ================== */
 const saved = localStorage.getItem(STORAGE);
-if(saved){
+iif(saved){
   const data = JSON.parse(saved);
   stats = data.stats || stats;
   game = data.game || game;
   avatarData = data.avatar || null;
   currentMood = data.mood || "neutral";
-  hardcoreMode = data.hardcore ?? true;
+  isHardcore = data.hardcore || false;
 }
 
 /* ================== DOM CACHE ================== */
@@ -476,10 +497,10 @@ const aiMessage = document.getElementById("aiMessage");
 function save(){
   localStorage.setItem(STORAGE, JSON.stringify({
     stats,
-game,
-avatar: avatarData,
-mood: currentMood,
-hardcore: hardcoreMode
+    game,
+    avatar: avatarData,
+    mood: currentMood,
+    hardcore: isHardcore
   }));
 }
 
@@ -517,17 +538,38 @@ function hardcorePenalty(){
   }
 }
 
+function applyHardcorePenalty(){
+  if(!isHardcore) return;
+
+  game.exp = Math.max(0, game.exp - 30);
+
+  if(game.exp === 0 && game.level > 1){
+    game.level--;
+    game.expMax = Math.max(100, Math.floor(game.expMax / 1.25));
+  }
+}
+
 function checkDay(){
-  const realToday = new Date().toDateString();
-  const today = devSimulatedDate || realToday;
+  const today = new Date().toDateString();
 
   if(game.lastDay !== today){
-    if(hardcoreMode){
-      hardcorePenalty();
+
+    // 🔥 HARDCORE PENALTY
+    if(isHardcore){
+      const totalQuests = quests.length;
+      const completedQuests = Object.keys(game.completed).length;
+
+      if(completedQuests < totalQuests){
+        applyHardcorePenalty();
+      }
     }
 
+    // RESET DAY
     game.completed = {};
     game.lastDay = today;
+
+    updateGameUI();
+    renderQuests();
     save();
   }
 }
@@ -715,18 +757,8 @@ function devResetGame(){
 }
 
 function devNextDay(){
-  const base = devSimulatedDate
-    ? new Date(devSimulatedDate)
-    : new Date(game.lastDay);
-
-  base.setDate(base.getDate() + 1);
-  devSimulatedDate = base.toDateString();
-
-  alert("🧪 Dev: Hari diganti ke\n" + devSimulatedDate);
-
+  game.lastDay = new Date(Date.now() - 86400000).toDateString();
   checkDay();
-  renderQuests();
-  updateGameUI();
 }
 
 function devResetSimulatedDay(){
@@ -813,6 +845,7 @@ updateAvatar();
 updateRank();
 updateGameUI();
 updateAICoach();
+updateHardcoreUI();
 checkDay();
 tabStats.click();
 </script>
