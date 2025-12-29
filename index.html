@@ -541,6 +541,20 @@ function checkDay(){
   }
 }
 
+function checkDay(){
+const today=new Date().toDateString();
+if(game.lastDay!==today){
+if(isHardcore && Object.keys(game.completed).length<quests.length){
+applyHardcorePenalty();
+}
+game.completed={};
+game.lastDay=today;
+renderQuests();
+updateGameUI();
+save();
+}
+}
+
 /* ================== MOOD ================== */
 document.querySelectorAll(".mood-options button").forEach(btn=>{
   btn.onclick = ()=>{
