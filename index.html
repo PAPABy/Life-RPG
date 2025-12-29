@@ -408,8 +408,15 @@ input[type=range] {
       🔄 Dev: Reset Day
     </button>
     <button onclick="devResetGame()" class="dev-reset-btn">
+     <button onclick="devNextDay()" style="margin-top:10px;width:100%">
+  🧪 Dev: Next Day
+</button>
   🧪 Dev: Reset Level Game
 </button>
+     <button onclick="devResetSimulatedDay()" style="width:100%">
+  🧪 Dev: Real Day
+</button>
+
   </div>
 </div>
 
@@ -439,7 +446,8 @@ let game = {
 };
 
 let avatarData = null;
-let hardcoreMode = true; // MODE HARDCORE AKTIF
+let hardcoreMode = true;
+let devSimulatedDate = null; // hanya untuk dev
 let currentMood = "neutral";
 let lastRank = null;
 
@@ -511,11 +519,11 @@ function hardcorePenalty(){
 }
 
 function checkDay(){
-  const today = new Date().toDateString();
+  const realToday = new Date().toDateString();
+  const today = devSimulatedDate || realToday;
 
   if(game.lastDay !== today){
-    // jika hardcore aktif, beri penalti
-    if(typeof hardcorePenalty === "function"){
+    if(hardcoreMode){
       hardcorePenalty();
     }
 
@@ -705,6 +713,26 @@ function devResetGame(){
   save();
 
   alert("🧪 Level game berhasil di-reset");
+}
+
+function devNextDay(){
+  const base = devSimulatedDate
+    ? new Date(devSimulatedDate)
+    : new Date(game.lastDay);
+
+  base.setDate(base.getDate() + 1);
+  devSimulatedDate = base.toDateString();
+
+  alert("🧪 Dev: Hari diganti ke\n" + devSimulatedDate);
+
+  checkDay();
+  renderQuests();
+  updateGameUI();
+}
+
+function devResetSimulatedDay(){
+  devSimulatedDate = null;
+  alert("Dev date kembali ke hari asli");
 }
 
 /* ================== RANK ================== */
