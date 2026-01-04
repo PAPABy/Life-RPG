@@ -442,6 +442,11 @@ const statConfig = {
   relationship:{label:"Relationship",color:"#ff6fae"}
 };
 
+let burnout = {
+  level: 0,
+  active: false
+};
+
 let stats = {};
 Object.keys(statConfig).forEach(k => stats[k] = 5);
 
@@ -480,6 +485,7 @@ if(saved){
   avatarData = data.avatar || null;
   currentMood = data.mood || "neutral";
   isHardcore = data.hardcore || false;
+  burnout = data.burnout || burnout;
 }
 
 /* ================== DOM CACHE ================== */
@@ -500,7 +506,8 @@ function save(){
     game,
     avatar: avatarData,
     mood: currentMood,
-    hardcore: isHardcore
+    hardcore: isHardcore,
+    burnout
   }));
 }
 
@@ -548,6 +555,22 @@ function hardcorePenalty(){
   save();
 }
 
+function updateBurnoutOnAction(){
+  if(!isHardcore) return;
+
+  if(currentMood === "tired" || currentMood === "bad"){
+    burnout.level += 20;
+  } else {
+    burnout.level -= 10;
+  }
+
+  burnout.level = Math.max(0, Math.min(100, burnout.level));
+
+  burnout.active = burnout.level >= 60;
+
+  save();
+}
+
 function checkDay(){
   const today = devSimulatedDate || new Date().toDateString();
 
@@ -555,6 +578,16 @@ function checkDay(){
     hardcorePenalty();
     game.completed = {};
     game.lastDay = today;
+
+  if(isHardcore && burnout.active){
+  game.exp = Math.max(0, game.exp - 40);
+
+  for(const k in stats){
+    stats[k] = Math.max(0, stats[k] - 0.2);
+  }
+
+  alert("🧠 Burnout!\nTubuh & pikiranmu butuh istirahat.");
+}
 
     renderQuests();
     updateGameUI();
@@ -582,6 +615,12 @@ document.querySelectorAll(".mood-options button").forEach(btn=>{
 
 /* ================== AI COACH ================== */
 function updateAICoach(){
+  if(burnout.active){
+  aiMessage.innerText =
+    "🧠 Kamu mengalami burnout. Hari ini, istirahat adalah progres terbaik.";
+  return;
+}
+
   let lowestKey = null;
   let lowestValue = Infinity;
 
@@ -689,6 +728,13 @@ function completeQuest(id){
     game.expMax = Math.floor(game.expMax*1.25);
     triggerLevelUpFX();
   }
+
+    updateBurnoutOnAction();
+
+if(burnout.active){
+  game.exp -= 10;
+  game.exp = Math.max(0, game.exp);
+}
 
   updateRank();
   renderQuests();
