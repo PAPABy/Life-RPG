@@ -454,7 +454,6 @@ let game = {
 };
 
 let avatarData = null;
-let hardcoreMode = true; // MODE HARDCORE AKTIF
 let isHardcore = false;
 let devSimulatedDate = null; // hanya untuk dev
 let currentMood = "neutral";
@@ -518,59 +517,47 @@ function applyHardcorePenalty(){
 }
 
 function hardcorePenalty(){
-  if(!hardcoreMode) return;
+  if(!isHardcore) return;
 
   const completedCount = Object.keys(game.completed).length;
+  if(completedCount > 0) return;
 
-  if(completedCount === 0){
-    game.exp = Math.max(0, game.exp - 30);
+  game.exp = Math.max(0, game.exp - 30);
 
-    let lowestKey = null;
-    let lowestValue = Infinity;
+  let lowestKey = null;
+  let lowestValue = Infinity;
 
-    for(const k in stats){
-      if(stats[k] < lowestValue){
-        lowestValue = stats[k];
-        lowestKey = k;
-      }
+  for(const k in stats){
+    if(stats[k] < lowestValue){
+      lowestValue = stats[k];
+      lowestKey = k;
     }
-
-    if(lowestKey){
-      stats[lowestKey] = Math.max(0, stats[lowestKey] - 0.3);
-    }
-
-    alert("⚠️ Hardcore Mode:\nKamu melewatkan hari tanpa progres.");
-
-    updateStatUI(lowestKey);
-    updateGameUI();
-    updateRank();
-    updateAvatar();
-    updateAICoach();
-    save();
   }
+
+  if(lowestKey){
+    stats[lowestKey] = Math.max(0, stats[lowestKey] - 0.3);
+    updateStatUI(lowestKey);
+  }
+
+  alert("⚠️ Hardcore: Hari terlewat tanpa progres.");
+
+  updateGameUI();
+  updateRank();
+  updateAvatar();
+  updateAICoach();
+  save();
 }
 
 function checkDay(){
-  const today = new Date().toDateString();
+  const today = devSimulatedDate || new Date().toDateString();
 
   if(game.lastDay !== today){
-
-    // 🔥 HARDCORE PENALTY
-    if(isHardcore){
-      const totalQuests = quests.length;
-      const completedQuests = Object.keys(game.completed).length;
-
-      if(completedQuests < totalQuests){
-        applyHardcorePenalty();
-      }
-    }
-
-    // RESET DAY
+    hardcorePenalty();
     game.completed = {};
     game.lastDay = today;
 
-    updateGameUI();
     renderQuests();
+    updateGameUI();
     save();
   }
 }
@@ -682,7 +669,7 @@ const quests = [
 ];
 
 function getExpGain(){
-  return game.level >= 8 ? 37 : 25;
+  return game.level >= 8 ? 50 : 25;
 }
 
 function updateGameUI(){
@@ -851,13 +838,13 @@ tabGame.onclick=()=>{
 
 /* ================== INIT ================== */
 Object.keys(statConfig).forEach(createStat);
+checkDay();
 renderQuests();
 updateAvatar();
 updateRank();
 updateGameUI();
 updateAICoach();
 updateHardcoreUI();
-checkDay();
 tabStats.click();
 </script>
 
