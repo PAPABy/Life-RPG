@@ -379,6 +379,15 @@ input[type=range] {
 </style>
 </head>
 
+<!-- ===== BURNOUT SOUND ===== -->
+<audio id="burnoutAmbient" loop>
+  <source src="burnout-ambient.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="burnoutTrigger">
+  <source src="burnout-trigger.mp3" type="audio/mpeg">
+</audio>
+
 <body>
 
 <div class="card">
@@ -457,6 +466,14 @@ const STORAGE = "life_rpg_full";
 const hardcoreBtn = document.getElementById("hardcoreToggle");
 
 /* ================== DATA DEFAULT ================== */
+const burnoutAmbient = document.getElementById("burnoutAmbient");
+const burnoutTrigger = document.getElementById("burnoutTrigger");
+
+burnoutAmbient.volume = 0.4;
+burnoutTrigger.volume = 0.7;
+
+let burnoutSoundActive = false;
+
 const statConfig = {
   discipline:{label:"Discipline",color:"#4facfe"},
   physical:{label:"Physical",color:"#ff4d4d"},
@@ -597,6 +614,7 @@ function updateBurnoutOnAction(){
   burnout.active = burnout.level >= 60;
 
   updateBurnoutVisual();
+  updateBurnoutSound();
   save();
 }
 
@@ -607,6 +625,20 @@ function updateBurnoutVisual(){
     card.classList.add("burnout");
   } else {
     card.classList.remove("burnout");
+  }
+}
+
+function updateBurnoutSound(){
+  if(burnout.active && !burnoutSoundActive){
+    burnoutTrigger.play().catch(()=>{});
+    burnoutAmbient.play().catch(()=>{});
+    burnoutSoundActive = true;
+  }
+
+  if(!burnout.active && burnoutSoundActive){
+    burnoutAmbient.pause();
+    burnoutAmbient.currentTime = 0;
+    burnoutSoundActive = false;
   }
 }
 
@@ -629,6 +661,7 @@ function checkDay(){
 }
 
     updateBurnoutVisual();
+    updateBurnoutSound();
     renderQuests();
     updateGameUI();
     save();
@@ -923,6 +956,13 @@ tabGame.onclick=()=>{
 };
 
 /* ================== INIT ================== */
+document.body.addEventListener("click", ()=>{
+  burnoutAmbient.play().then(()=>{
+    burnoutAmbient.pause();
+    burnoutAmbient.currentTime = 0;
+  }).catch(()=>{});
+},{ once:true });
+
 Object.keys(statConfig).forEach(createStat);
 checkDay();
 renderQuests();
@@ -932,6 +972,7 @@ updateGameUI();
 updateAICoach();
 updateHardcoreUI();
 updateBurnoutVisual();
+updateBurnoutSound();
 tabStats.click();
 </script>
 
