@@ -582,6 +582,10 @@ function hardcorePenalty(){
 function updateBurnoutOnAction(){
   if(!isHardcore) return;
 
+  if(burnout.active){
+  navigator.vibrate?.(200);
+}
+
   if(currentMood === "tired" || currentMood === "bad"){
     burnout.level += 20;
   } else {
